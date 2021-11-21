@@ -2,6 +2,7 @@ import os
 import re
 import sys
 import time
+import json
 import random
 import argparse
 from tqdm import tqdm
@@ -185,12 +186,25 @@ def evaluate(model, test_data_iterator, criterion):
     epoch_acc = total_epoch_acc / len(test_data_iterator)
     return epoch_loss, epoch_acc
 
-def fitness_sentiment_analysis(hyperparameter, train_data, valid_data, test_data, vocab_size, padding_idx, verbose=True):
+def verify_dir(dir_path):
+    if not os.path.exists(dir_path):
+        os.makedirs(dir_path)
+
+def fitness_sentiment_analysis(hyperparameter, train_data, valid_data, test_data, vocab_size, padding_idx, save_path="sentiment-analysis-model", verbose=True):
     print_debug("[I] fitness_sentiment_analysis")
     seed_reset()
     NUM_EMBEDDINGS = vocab_size
     PADDING_IDX = padding_idx
     param_dict = hyperparameter
+
+    # create model directory
+    model_save_path = os.path.join(save_path, param_dict['model_name'])
+    verify_dir(model_save_path)
+
+    # save param before training
+    with open(os.path.join(model_save_path, "params.json"), 'w') as paramfile:
+        json.dump(param_dict, paramfile, indent=2)
+
     model = SentimentModel(NUM_EMBEDDINGS, 
                 PADDING_IDX,
                 param_dict['embedding_dim'], 
@@ -215,42 +229,68 @@ def fitness_sentiment_analysis(hyperparameter, train_data, valid_data, test_data
                                 sort_key=lambda x: len(x.review),
                                 device = device)
 
-    start_fitness_time = time.time()
+    end_train_time, start_train_time = None, None
+    end_test_time, start_test_time = None, None
     train_loss, train_acc = None, None
     valid_loss, valid_acc = None, None
     test_loss, test_acc = None, None
 
-    optimizer = optim.Adam(model.parameters(), lr=param_dict['learning_rate'])
-    criterion = nn.BCEWithLogitsLoss()
-    model = model.to(device)
-    criterion = criterion.to(device)
+    try:
+        optimizer = optim.Adam(model.parameters(), lr=param_dict['learning_rate'])
+        criterion = nn.BCEWithLogitsLoss()
+        model = model.to(device)
+        criterion = criterion.to(device)
 
-    best_val_acc = 0
-    for epoch in range(param_dict['num_epochs']):
-        print(f'Epoch: {epoch+1:02}')
-        start_time = time.time()
-        train_loss, train_acc = train_one_epoch(model, train_iter, optimizer, criterion)
-        valid_loss, valid_acc = evaluate(model, val_iter, criterion)   
-        if best_val_acc < valid_acc : 
-            best_val_acc = valid_acc
-            torch.save(model.state_dict(), ('{}_best.pt'.format(param_dict['model_name'])))
-        if verbose:
-            end_time = time.time()
-            epoch_mins, epoch_secs = check_elapsed_time(start_time, end_time)
-            print(f'\nEpoch Time: {epoch_mins}m {epoch_secs}s')
-            print(f'\tTrain Loss: {train_loss:.3f} | Train Acc: {train_acc*100:.2f}%')
-            print(f'\t Val. Loss: {valid_loss:.3f} |  Val. Acc: {valid_acc*100:.2f}%')
+        best_val_acc = 0
+        start_train_time = time.time()
+        for epoch in range(param_dict['num_epochs']):
+            print(f'Epoch: {epoch+1:02}')
+            start_time = time.time()
+            train_loss, train_acc = train_one_epoch(model, train_iter, optimizer, criterion)
+            valid_loss, valid_acc = evaluate(model, val_iter, criterion)   
+            if best_val_acc < valid_acc : 
+                best_val_acc = valid_acc
+                torch.save(model.state_dict(), os.path.join(model_save_path, ('{}_best.pt'.format(param_dict['model_name']))))
+            if verbose:
+                end_time = time.time()
+                epoch_mins, epoch_secs = check_elapsed_time(start_time, end_time)
+                print(f'\nEpoch Time: {epoch_mins}m {epoch_secs}s')
+                print(f'\tTrain Loss: {train_loss:.3f} | Train Acc: {train_acc*100:.2f}%')
+                print(f'\t Val. Loss: {valid_loss:.3f} |  Val. Acc: {valid_acc*100:.2f}%')
 
-    model.load_state_dict(torch.load(('{}_best.pt'.format(param_dict['model_name']))))    
-    test_loss, test_acc = evaluate(model, test_iter, criterion)
-    print(f'\t Test Loss: {test_loss:.3f} |  Test Acc: {test_acc*100:.2f}%')
+        end_train_time = time.time()
 
-    end_fitness_time = time.time()
-    return train_loss, train_acc, valid_loss, valid_acc, test_loss, test_acc, start_fitness_time, end_fitness_time
+        model.load_state_dict(torch.load(os.path.join(model_save_path, ('{}_best.pt'.format(param_dict['model_name'])))))    
+        start_test_time = time.time()
+        test_loss, test_acc = evaluate(model, test_iter, criterion)
+        end_test_time = time.time()
+        print(f'\t Test Loss: {test_loss:.3f} |  Test Acc: {test_acc*100:.2f}%')
+    except:
+        end_train_time, start_train_time = -1, -1
+        end_test_time, start_test_time = -1, -1
+        train_loss, train_acc = -1, -1
+        valid_loss, valid_acc = -1, -1
+        test_loss, test_acc = -1, -1
+
+    # save result before return
+    fitness_result = {
+        'train_loss' : train_loss, 
+        'train_acc' : train_acc, 
+        'valid_loss' : valid_loss, 
+        'valid_acc' : valid_acc, 
+        'test_loss' : test_loss, 
+        'test_acc' : test_acc,
+        'train_time' : (end_train_time - start_train_time),
+        'test_time' : (end_test_time - start_test_time)
+    }
+    with open(os.path.join(model_save_path, "results.json"), 'w') as resultfile:
+        json.dump(fitness_result, resultfile, indent=2)
+
+    return train_loss, train_acc, valid_loss, valid_acc, test_loss, test_acc
 
 def set_hyperparameter_dict():
     param_dict = {
-        'model_name': 'sa-1-1',
+        'model_name': 'sa-1-1', # this is just identifier first '1' means generation and second '1' is just id
         'embedding_dim': 128, # can be modified
         'rnn_hidden_dim': 256, # can be modified
         'rnn_num_layers': 2, # can be modified
@@ -259,9 +299,9 @@ def set_hyperparameter_dict():
         'fc_hidden_dim' : 128, # can be modified
         'fc_num_layers' : 1, # can be modified
         'fc_dropout' : 0.5, # can be modified
-        'batch_size': 32, # can be modified
-        'num_epochs': 3, # can be modified
         'learning_rate': 1e-3, # can be modified
+        'batch_size': 32, 
+        'num_epochs': 1,
         'device':'cuda'
     }
     return param_dict
@@ -272,7 +312,5 @@ if __name__ == '__main__':
     # load the dataset first so we dont have to load it if we want to train a model
     train_data, valid_data, test_data, vocab_size, padding_idx = _load_dataset() 
 
-    train_loss, train_acc, valid_loss, valid_acc, test_loss, test_acc, start_fitness_time, end_fitness_time = fitness_sentiment_analysis(hyperparameter, train_data, valid_data, test_data, vocab_size, padding_idx)
-    fitness_mins, fitness_secs = check_elapsed_time(start_fitness_time, end_fitness_time)
-    print(f'\Fitness Time: {fitness_mins}m {fitness_secs}s')
+    train_loss, train_acc, valid_loss, valid_acc, test_loss, test_acc = fitness_sentiment_analysis(hyperparameter, train_data, valid_data, test_data, vocab_size, padding_idx)
     print(train_loss, train_acc, valid_loss, valid_acc, test_loss, test_acc)
