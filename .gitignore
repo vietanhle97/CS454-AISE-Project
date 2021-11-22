@@ -1,0 +1,10 @@
+# python related
+__pycache__/
+
+# data related
+data/
+*.csv
+*.zip
+
+# model related
+*.pt
