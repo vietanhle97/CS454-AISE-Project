@@ -7,6 +7,7 @@ import random
 import argparse
 from tqdm import tqdm
 
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -41,6 +42,7 @@ def _load_dataset():
     test_data = TabularDataset(path="data/sentiment-analysis/Test.csv", 
                                 format='csv', 
                                 fields=[('review', TEXT), ('sentiment', LABEL)], skip_header=True)
+
     TEXT.build_vocab(train_data)
     LABEL.build_vocab(train_data)
     vocab_size = len(TEXT.vocab)
@@ -329,11 +331,24 @@ def set_hyperparameter_dict():
     }
     return param_dict
 
-if __name__ == '__main__':
-    # this is just the dummy hyperparameter
-    hyperparameter = set_hyperparameter_dict()
-    # load the dataset first so we dont have to load it if we want to train a model
-    train_data, valid_data, test_data, vocab_size, padding_idx = _load_dataset() 
 
-    train_loss, train_acc, valid_loss, valid_acc, test_loss, test_acc = fitness_sentiment_analysis(hyperparameter, train_data, valid_data, test_data, vocab_size, padding_idx)
-    print(train_loss, train_acc, valid_loss, valid_acc, test_loss, test_acc)
+class SentimentAnalysisModel:
+
+    def __init__(self):
+        pass
+
+
+    @staticmethod
+    def build():
+        hyperparameter = set_hyperparameter_dict()
+        # load the dataset first so we dont have to load it if we want to train a model
+        train_data, valid_data, test_data, vocab_size, padding_idx = _load_dataset() 
+
+        train_loss, train_acc, valid_loss, valid_acc, test_loss, test_acc = fitness_sentiment_analysis(hyperparameter, train_data, valid_data, test_data, vocab_size, padding_idx)
+
+        print(train_loss, train_acc, valid_loss, valid_acc, test_loss, test_acc)
+
+        return 100
+
+if __name__ == '__main__':
+    SentimentAnalysisModel.build()

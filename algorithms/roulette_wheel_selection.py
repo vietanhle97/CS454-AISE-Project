@@ -21,11 +21,11 @@ class RouletteWheelSelection:
 			cumulative_sum_percentage[i] = 100*cumulative_sum[i]/total
 
 		for i in range(roulette_wheel_size):
-			results.append(pop_ranked[i][0])
+			results.append(i)
 		for i in range(len(pop_ranked) - roulette_wheel_size):
 			pick = 100*random.random()
 			for i in range(0, len(pop_ranked)):
 				if pick <= cumulative_sum_percentage[i]:
-					results.append(pop_ranked[i][0])
+					results.append(i)
 					break
 		return results

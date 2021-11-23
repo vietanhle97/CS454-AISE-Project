@@ -19,11 +19,12 @@ def create_first_generation(options, search_params):
 
 	return first_gen
 
-def init_population(options, search_params, size):
+def init_population(options, search_params, size, model):
 	population = []
 	for i in range(size):
 		individual = create_first_generation(options, search_params)
-		population.append((individual, FitnessFunction.calculate_fitness(individual)))
+		fitness = FitnessFunction.calculate_fitness(individual, model)
+		population.append((individual, fitness))
 
 	return population
 
@@ -34,28 +35,30 @@ def rank_individuals(population):
 def mating_pool(population, selection):
 	pool = []
 	for i in range(len(selection)):
-		index = selection[i]
-		pool.append(population[index])
+		pool.append(population[selection[i]])
 	return pool
 
-def crossover(p1, p2):
+def crossover(p1, p2, model):
+
 	child = {}
 	
 	idx = random.randint(0, len(p1))
 
-	params = list(p1[0].keys())
+	params = list(p1.keys())
 
 	for i, e in enumerate(params):
 		if i < idx:
-			child[e] = p1[0][e]
+			child[e] = p1[e]
 		else:
-			child[e] = p2[0][e]
+			child[e] = p2[e]
 
-	return child
+	fitness = FitnessFunction.calculate_fitness(child, model)
 
-def crossover_population(mating_pool, size):
+	return child, fitness
+
+def crossover_population(mating_pool, size, model):
+
 	children = []
-
 	length = len(mating_pool) - size
 	pool = random.sample(mating_pool, len(mating_pool))
 
@@ -63,29 +66,33 @@ def crossover_population(mating_pool, size):
 		children.append(mating_pool[i])
 
 	for i in range(length):
-		child = crossover(pool[i], pool[len(mating_pool)-i-1])
-		children.append((child, FitnessFunction.calculate_fitness(child)))
+		child, fitness = crossover(pool[i][0], pool[len(mating_pool)-i-1][0], model)
+		
+		children.append((child, fitness))
+
 	return children
 
-def mutate(individual, options, search_params):
+def mutate(individual, options, search_params, model):
 	
 	params = list(options.keys())
 
 	mutate_gene = random.choice(search_params)
 
-	individual[0][mutate_gene] = random.choice(options[mutate_gene])
+	individual[mutate_gene] = random.choice(options[mutate_gene])
 
-	return individual 
+	fitness = FitnessFunction.calculate_fitness(individual, model)
 
-def mutate_population(population, options, search_params):
+	return individual, fitness
+
+def mutate_population(population, options, search_params, model):
 	mutated_population = []
 
 	for i in range(len(population)):
-		mutated_index = mutate(population[i], options, search_params)
+		mutated_index = mutate(population[i][0], options, search_params, model)
 		mutated_population.append(mutated_index)
 	return mutated_population
 
-def next_generation(current, size, options, strategy, search_params):\
+def next_generation(current, size, options, strategy, search_params, model):
 
 	pop_ranked = rank_individuals(current)
 
@@ -95,24 +102,29 @@ def next_generation(current, size, options, strategy, search_params):\
 	elif strategy == "Roulette Wheel":
 		results = RouletteWheelSelection.select(pop_ranked, size)
 	matingpool = mating_pool(current, results)
-	children = crossover_population(matingpool, size)
-	next_gen = mutate_population(children, options, search_params)
+	children = crossover_population(matingpool, size, model)
+
+	next_gen = mutate_population(children, options, search_params, model)
 	return next_gen
 
 
 	# plt.show()
 
-def memetic(options, search_params, pop_size, selection_size, generations, strategy):
-	pop = init_population(options, search_params, pop_size)
-	distance = rank_individuals(pop)[0][1]
+def genetic(options, search_params, pop_size, selection_size, generations, strategy, model):
+
+	pop = init_population(options, search_params, pop_size, model)
+
+	params, fitness = rank_individuals(pop)[0]
 
 	for i in range(generations):
-		pop = next_generation(pop, selection_size, options, strategy, search_params)
-		tmp = rank_individuals(pop)[0][1]
-		if i == generations - 1:
-			distance = tmp
+		pop = next_generation(pop, selection_size, options, strategy, search_params, model)
+		curr_params, curr_fitness = rank_individuals(pop)[0]
 
-	return distance
+		if i == generations-1:
+			fitness = curr_fitness
+			params = curr_params
+
+	return params, fitness 
 
 
 class GeneticAlgorithm:
@@ -121,6 +133,6 @@ class GeneticAlgorithm:
 		pass
 
 	@staticmethod
-	def execute(options, search_params, strategy, figure):
-		return memetic(options = options, search_params = search_params, pop_size=3, selection_size=2,  generations=10, strategy=strategy)
+	def execute(options, search_params, strategy, model):
+		return genetic(options = options, search_params = search_params, pop_size=3, selection_size=2,  generations=10, strategy=strategy, model = model)
 

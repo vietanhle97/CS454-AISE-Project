@@ -1,5 +1,5 @@
 from memetic import MemeticAlgorithm
-
+import sys
 
 if __name__ == '__main__':
 	
@@ -42,6 +42,19 @@ if __name__ == '__main__':
 
 	search_params = [k for k in options if type(options[k]) == list]
 
-	res = MemeticAlgorithm.execute(options, search_params, "Tournament", [])
+	genetic_tournament = MemeticAlgorithm.execute(options, search_params, "Tournament", "")
 
-	print(res)
+	print(genetic_tournament)
+
+	genetic_roullete = MemeticAlgorithm.execute(options, search_params, "Roulette Wheel", "")
+
+	print(genetic_roullete)
+
+
+	memetic_tournament = MemeticAlgorithm.execute(options, search_params, "Tournament", "")
+
+	print(memetic_tournament)
+
+	memetic_roullete = MemeticAlgorithm.execute(options, search_params, "Roulette Wheel", "")
+
+	print(memetic_roullete)

@@ -7,4 +7,4 @@ class LocalSearch:
 
 	@staticmethod
 	def search(params):
-		pass
+		return params, 100
