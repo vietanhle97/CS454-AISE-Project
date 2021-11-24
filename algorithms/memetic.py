@@ -51,10 +51,6 @@ def crossover(p1, p2, model):
 		else:
 			child[e] = p2[e]
 
-	# Perform Local Search
-
-	child, fitness = LocalSearch.search(child)
-
 	fitness = FitnessFunction.calculate_fitness(child, model)
 
 	return child, fitness
@@ -95,7 +91,7 @@ def mutate_population(population, options, search_params, model):
 		mutated_population.append(mutated_index)
 	return mutated_population
 
-def next_generation(current, size, options, strategy, search_params, model):
+def next_generation(current, size, options, strategy, search_params, model, num_individual_perform_local_search):
 
 	pop_ranked = rank_individuals(current)
 
@@ -107,19 +103,29 @@ def next_generation(current, size, options, strategy, search_params, model):
 	matingpool = mating_pool(current, results)
 	children = crossover_population(matingpool, size, model)
 	next_gen = mutate_population(children, options, search_params, model)
+
+	improved_individual_indices = random.sample([i for i in range(len(next_gen))], num_individual_perform_local_search)
+
+	for idx in improved_individual_indices:
+
+		improved_child, improved_fitness = LocalSearch.search(next_gen[idx][0])
+
+		if improved_fitness > next_gen[idx][1]:
+			next_gen[idx] = (improved_child, improved_fitness)
+
 	return next_gen
 
 
 	# plt.show()
 
-def memetic(options, search_params, pop_size, selection_size, generations, strategy, model):
+def memetic(options, search_params, pop_size, selection_size, generations, strategy, model, num_individual_perform_local_search):
 
 	pop = init_population(options, search_params, pop_size, model)
 
 	params, fitness = rank_individuals(pop)[0]
 
 	for i in range(generations):
-		pop = next_generation(pop, selection_size, options, strategy, search_params, model)
+		pop = next_generation(pop, selection_size, options, strategy, search_params, model, num_individual_perform_local_search)
 		curr_params, curr_fitness = rank_individuals(pop)[0]
 
 		if i == generations-1:
@@ -135,6 +141,6 @@ class MemeticAlgorithm:
 		pass
 
 	@staticmethod
-	def execute(options, search_params, strategy, model):
-		return memetic(options = options, search_params = search_params, pop_size=3, selection_size=2,  generations=10, strategy=strategy, model = model)
+	def execute(options, search_params, strategy, model, num_individual_perform_local_search):
+		return memetic(options = options, search_params = search_params, pop_size=3, selection_size=2,  generations=10, strategy=strategy, model = model, num_individual_perform_local_search = num_individual_perform_local_search)
 
