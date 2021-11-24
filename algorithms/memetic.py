@@ -83,15 +83,20 @@ def mutate(individual, options, search_params, model):
 
 	return individual, fitness
 
-def mutate_population(population, options, search_params, model):
+def mutate_population(population, options, search_params, model, mutate_rate):
 	mutated_population = []
 
+	to_be_mutated_individuals = random.sample([i for i in range(len(population))], int(len(population) * mutate_rate))
+
 	for i in range(len(population)):
-		mutated_index = mutate(population[i][0], options, search_params, model)
-		mutated_population.append(mutated_index)
+		if i in to_be_mutated_individuals:
+			mutated_individual = mutate(population[i][0], options, search_params, model)
+			mutated_population.append(mutated_individual)
+		else:
+			mutated_population.append(population[i])
 	return mutated_population
 
-def next_generation(current, size, options, strategy, search_params, model, num_individual_perform_local_search):
+def next_generation(current, size, options, strategy, search_params, model, num_local_search, mutate_rate):
 
 	pop_ranked = rank_individuals(current)
 
@@ -102,13 +107,13 @@ def next_generation(current, size, options, strategy, search_params, model, num_
 		results = RouletteWheelSelection.select(pop_ranked, size)
 	matingpool = mating_pool(current, results)
 	children = crossover_population(matingpool, size, model)
-	next_gen = mutate_population(children, options, search_params, model)
+	next_gen = mutate_population(children, options, search_params, model, mutate_rate)
 
-	improved_individual_indices = random.sample([i for i in range(len(next_gen))], num_individual_perform_local_search)
+	improved_individual_indices = random.sample([i for i in range(len(next_gen))], num_local_search)
 
 	for idx in improved_individual_indices:
 
-		improved_child, improved_fitness = LocalSearch.search(next_gen[idx][0])
+		improved_child, improved_fitness = LocalSearch.search(next_gen[idx], options, search_params, model)
 
 		if improved_fitness > next_gen[idx][1]:
 			next_gen[idx] = (improved_child, improved_fitness)
@@ -116,16 +121,14 @@ def next_generation(current, size, options, strategy, search_params, model, num_
 	return next_gen
 
 
-	# plt.show()
-
-def memetic(options, search_params, pop_size, selection_size, generations, strategy, model, num_individual_perform_local_search):
+def memetic(options, search_params, pop_size, selection_size, generations, strategy, model, num_local_search, mutate_rate):
 
 	pop = init_population(options, search_params, pop_size, model)
 
 	params, fitness = rank_individuals(pop)[0]
 
 	for i in range(generations):
-		pop = next_generation(pop, selection_size, options, strategy, search_params, model, num_individual_perform_local_search)
+		pop = next_generation(pop, selection_size, options, strategy, search_params, model, num_local_search, mutate_rate)
 		curr_params, curr_fitness = rank_individuals(pop)[0]
 
 		if i == generations-1:
@@ -141,6 +144,6 @@ class MemeticAlgorithm:
 		pass
 
 	@staticmethod
-	def execute(options, search_params, strategy, model, num_individual_perform_local_search):
-		return memetic(options = options, search_params = search_params, pop_size=3, selection_size=2,  generations=10, strategy=strategy, model = model, num_individual_perform_local_search = num_individual_perform_local_search)
+	def execute(options, search_params, strategy, model, mutate_rate, num_local_search):
+		return memetic(options = options, search_params = search_params, pop_size=3, selection_size=2,  generations=10, strategy=strategy, model = model, mutate_rate = mutate_rate, num_local_search = num_local_search)
 

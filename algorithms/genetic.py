@@ -84,15 +84,21 @@ def mutate(individual, options, search_params, model):
 
 	return individual, fitness
 
-def mutate_population(population, options, search_params, model):
+def mutate_population(population, options, search_params, model, mutate_rate):
 	mutated_population = []
 
+	to_be_mutated_individuals = random.sample([i for i in range(len(population))], int(len(population) * mutate_rate))
+
 	for i in range(len(population)):
-		mutated_index = mutate(population[i][0], options, search_params, model)
-		mutated_population.append(mutated_index)
+		if i in to_be_mutated_individuals:
+			mutated_individual = mutate(population[i][0], options, search_params, model)
+			mutated_population.append(mutated_individual)
+		else:
+			mutated_population.append(population[i])
+
 	return mutated_population
 
-def next_generation(current, size, options, strategy, search_params, model):
+def next_generation(current, size, options, strategy, search_params, model, mutate_rate):
 
 	pop_ranked = rank_individuals(current)
 
@@ -103,21 +109,20 @@ def next_generation(current, size, options, strategy, search_params, model):
 		results = RouletteWheelSelection.select(pop_ranked, size)
 	matingpool = mating_pool(current, results)
 	children = crossover_population(matingpool, size, model)
-
-	next_gen = mutate_population(children, options, search_params, model)
+	next_gen = mutate_population(children, options, search_params, model, mutate_rate)
 	return next_gen
 
 
 	# plt.show()
 
-def genetic(options, search_params, pop_size, selection_size, generations, strategy, model):
+def genetic(options, search_params, pop_size, selection_size, generations, strategy, model, mutate_rate):
 
 	pop = init_population(options, search_params, pop_size, model)
 
 	params, fitness = rank_individuals(pop)[0]
 
 	for i in range(generations):
-		pop = next_generation(pop, selection_size, options, strategy, search_params, model)
+		pop = next_generation(pop, selection_size, options, strategy, search_params, model, mutate_rate)
 		curr_params, curr_fitness = rank_individuals(pop)[0]
 
 		if i == generations-1:
@@ -133,6 +138,6 @@ class GeneticAlgorithm:
 		pass
 
 	@staticmethod
-	def execute(options, search_params, strategy, model):
-		return genetic(options = options, search_params = search_params, pop_size=3, selection_size=2,  generations=10, strategy=strategy, model = model)
+	def execute(options, search_params, strategy, model, mutate_rate):
+		return genetic(options = options, search_params = search_params, pop_size=3, selection_size=2,  generations=10, strategy=strategy, model = model, mutate_rate = mutate_rate)
 

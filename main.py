@@ -11,7 +11,7 @@ from genetic import GeneticAlgorithm
 
 
 if __name__ == '__main__':
-	options = {
+	sentimentanalysis_options = {
 		'model_name': 'sa-1-1', # this is just identifier first '1' means generation and second '1' is just id
 
 		'embedding_dim': [8, 16, 32, 64, 128, 256, 512, 1024],
@@ -48,21 +48,21 @@ if __name__ == '__main__':
 	}
 
 
-	search_params = [k for k in options if type(options[k]) == list]
+	search_params = [k for k in sentimentanalysis_options if type(sentimentanalysis_options[k]) == list]
 
-	genetic_tournament = GeneticAlgorithm.execute(options, search_params, "Tournament", "")
+	genetic_tournament = GeneticAlgorithm.execute(sentimentanalysis_options, search_params, "Tournament", "", 0.4)
 
 	print(genetic_tournament)
 
-	genetic_roullete = GeneticAlgorithm.execute(options, search_params, "Roulette Wheel", "")
+	genetic_roullete = GeneticAlgorithm.execute(sentimentanalysis_options, search_params, "Roulette Wheel", "", 0.4)
 
 	print(genetic_roullete)
 
 
-	memetic_tournament = MemeticAlgorithm.execute(options, search_params, "Tournament", "", 3)
+	memetic_tournament = MemeticAlgorithm.execute(sentimentanalysis_options, search_params, "Tournament", "", 0.4, 3)
 
 	print(memetic_tournament)
 
-	memetic_roullete = MemeticAlgorithm.execute(options, search_params, "Roulette Wheel", "", 3)
+	memetic_roullete = MemeticAlgorithm.execute(sentimentanalysis_options, search_params, "Roulette Wheel", "", 0.4, 3)
 
 	print(memetic_roullete)
