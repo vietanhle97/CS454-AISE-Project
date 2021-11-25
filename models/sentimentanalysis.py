@@ -25,7 +25,9 @@ def print_debug(*args, **kwargs):
     if DEBUG_MODE:
         print(*args, **kwargs)
 
-def _load_dataset():
+def _load_dataset(train_path="data/sentiment-analysis/Train.csv",
+                  valid_path="data/sentiment-analysis/Valid.csv", 
+                  test_path="data/sentiment-analysis/Test.csv"):
     print_debug("[I] LOAD DATASET")
     preprocess_pipeline = Pipeline(lambda x: re.sub(r'[^a-z]+', ' ', x))
     TEXT = Field(batch_first = True,
@@ -33,13 +35,13 @@ def _load_dataset():
                 lower=True, 
                 preprocessing=preprocess_pipeline)
     LABEL = LabelField(dtype = torch.float)
-    train_data = TabularDataset(path="data/sentiment-analysis/Train.csv", 
+    train_data = TabularDataset(path=train_path, 
                                 format='csv', 
                                 fields=[('review', TEXT), ('sentiment', LABEL)], skip_header=True)
-    valid_data = TabularDataset(path="data/sentiment-analysis/Valid.csv", 
+    valid_data = TabularDataset(path=valid_path, 
                                 format='csv', 
                                 fields=[('review', TEXT), ('sentiment', LABEL)], skip_header=True)
-    test_data = TabularDataset(path="data/sentiment-analysis/Test.csv", 
+    test_data = TabularDataset(path=test_path, 
                                 format='csv', 
                                 fields=[('review', TEXT), ('sentiment', LABEL)], skip_header=True)
 
@@ -342,7 +344,9 @@ class SentimentAnalysisModel:
     def build():
         hyperparameter = set_hyperparameter_dict()
         # load the dataset first so we dont have to load it if we want to train a model
-        train_data, valid_data, test_data, vocab_size, padding_idx = _load_dataset() 
+        train_data, valid_data, test_data, vocab_size, padding_idx = _load_dataset(train_path="../data/sentiment-analysis/Train.csv",
+                                                                                   valid_path="../data/sentiment-analysis/Valid.csv",
+                                                                                   test_path="../data/sentiment-analysis/Test.csv") 
 
         train_loss, train_acc, valid_loss, valid_acc, test_loss, test_acc = fitness_sentiment_analysis(hyperparameter, train_data, valid_data, test_data, vocab_size, padding_idx)
 
