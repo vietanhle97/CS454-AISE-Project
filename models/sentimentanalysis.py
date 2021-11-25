@@ -113,7 +113,7 @@ class SentimentModel(nn.Module):
         self.fc_dropout_rate = fc_dropout
         self.fcs = []
         input_fc, output_fc = self.rnn_hidden_dim, self.fc_hidden_dim
-        for _ in range(self.fc_num_layers-1):
+        for _ in range(self.fc_num_layers):
             self.fcs.append(nn.Linear(in_features=input_fc, out_features=output_fc))
             input_fc = output_fc
         self.stack_fc = nn.Sequential(*(self.fcs))
@@ -348,7 +348,7 @@ class SentimentAnalysisModel:
                                                                                    valid_path="../data/sentiment-analysis/Valid.csv",
                                                                                    test_path="../data/sentiment-analysis/Test.csv") 
 
-        train_loss, train_acc, valid_loss, valid_acc, test_loss, test_acc = fitness_sentiment_analysis(hyperparameter, train_data, valid_data, test_data, vocab_size, padding_idx)
+        train_loss, train_acc, valid_loss, valid_acc, test_loss, test_acc = fitness_sentiment_analysis(hyperparameter, train_data, valid_data, test_data, vocab_size, padding_idx, save_path="../sentiment-analysis-model")
 
         print(train_loss, train_acc, valid_loss, valid_acc, test_loss, test_acc)
 
