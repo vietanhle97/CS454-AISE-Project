@@ -8,3 +8,9 @@ data/
 
 # model related
 *.pt
+/data/sentiment-analysis/Train.csv
+/data/sentiment-analysis/Test.csv
+/data/sentiment-analysis/Valid.csv
+
+# iOS
+.DS_Store
