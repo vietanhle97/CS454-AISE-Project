@@ -311,14 +311,23 @@ def set_hyperparameter_dict():
     param_dict = {
         'model_name': 'sa-1-1', # this is just identifier first '1' means generation and second '1' is just id
         "conv_1_out_channels":64,
+        # [8, 16, 32, 64, 128, 256, 512, 1024, 2048]
         "conv_1_bias":True,
+        # [True, False]
         "conv_2_out_channels":64,
+        # [8, 16, 32, 64, 128, 256, 512, 1024, 2048]
         "conv_2_bias":True,
+        # [True, False]
         "conv_dropout":0.1,
+        # [0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85]
         "fc_hidden_dim":64,
+        # [8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096]
         "fc_num_layers":2,
+        # [1,2,3,4,5,6,7,8]
         "fc_dropout":0.0,
+        # [0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85]
         "learning_rate":0.001, 
+        # [0.01, 0.005, 0.001, 0.0005, 0.0001, 0.00005, 0.00001]
         # ============= do not modify the below hyperparameter
         "batch_size":8, 
         "num_epochs":10, 

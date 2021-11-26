@@ -11,8 +11,12 @@ from tqdm import tqdm
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from torchtext.legacy.data import Field, LabelField, TabularDataset, Pipeline, BucketIterator
 from torch.nn.utils.rnn import pack_padded_sequence
+
+try:
+    from torchtext.legacy.data import Field, LabelField, TabularDataset, Pipeline, BucketIterator
+except:
+    from torchtext.data import Field, LabelField, TabularDataset, Pipeline, BucketIterator
 
 def seed_reset(SEED=0):
     random.seed(SEED)
@@ -321,6 +325,7 @@ def set_hyperparameter_dict():
         'learning_rate': 1e-3, # can be modified
         # [0.01, 0.005, 0.001, 0.0005, 0.0001, 0.00005, 0.00001]
         # please set 0.01 to be the maximum value and 0.00001 to the minimum value
+        # ====================================================== do not modify the below hyperparameter
         'batch_size': 32,
         # actually, we can modify the batch size
         # but i think we do not have to modify the batch_size because it effects the training time. 
@@ -328,7 +333,6 @@ def set_hyperparameter_dict():
         'num_epochs': 1, 
         # i think we do not have to modify the num of epochs because it realy effects the training time
         # moreover, we will pick the model that has highest validation score during training
-
         'device':'cuda'
     }
     return param_dict
