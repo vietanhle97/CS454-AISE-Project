@@ -25,9 +25,8 @@ class LocalSearch:
 				if type(values[0]) == int or type(values[0]) ==float:
 					break
 
-		if type(values[0]) != int and type(values[0]) !=float:
+		if type(values[0]) != int and type(values[0]) != float:
 			return individual
-
 
 		curr_idx = options[search_param].index(individual[0][search_param])
 
