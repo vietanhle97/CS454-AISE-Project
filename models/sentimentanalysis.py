@@ -11,8 +11,12 @@ from tqdm import tqdm
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from torchtext.legacy.data import Field, LabelField, TabularDataset, Pipeline, BucketIterator
 from torch.nn.utils.rnn import pack_padded_sequence
+
+try:
+    from torchtext.legacy.data import Field, LabelField, TabularDataset, Pipeline, BucketIterator
+except:
+    from torchtext.data import Field, LabelField, TabularDataset, Pipeline, BucketIterator
 
 def seed_reset(SEED=0):
     random.seed(SEED)
@@ -25,7 +29,9 @@ def print_debug(*args, **kwargs):
     if DEBUG_MODE:
         print(*args, **kwargs)
 
-def _load_dataset():
+def _load_dataset(train_path="data/sentiment-analysis/Train.csv",
+                  valid_path="data/sentiment-analysis/Valid.csv", 
+                  test_path="data/sentiment-analysis/Test.csv"):
     print_debug("[I] LOAD DATASET")
     preprocess_pipeline = Pipeline(lambda x: re.sub(r'[^a-z]+', ' ', x))
     TEXT = Field(batch_first = True,
@@ -33,13 +39,13 @@ def _load_dataset():
                 lower=True, 
                 preprocessing=preprocess_pipeline)
     LABEL = LabelField(dtype = torch.float)
-    train_data = TabularDataset(path="data/sentiment-analysis/Train.csv", 
+    train_data = TabularDataset(path=train_path, 
                                 format='csv', 
                                 fields=[('review', TEXT), ('sentiment', LABEL)], skip_header=True)
-    valid_data = TabularDataset(path="data/sentiment-analysis/Valid.csv", 
+    valid_data = TabularDataset(path=valid_path, 
                                 format='csv', 
                                 fields=[('review', TEXT), ('sentiment', LABEL)], skip_header=True)
-    test_data = TabularDataset(path="data/sentiment-analysis/Test.csv", 
+    test_data = TabularDataset(path=test_path, 
                                 format='csv', 
                                 fields=[('review', TEXT), ('sentiment', LABEL)], skip_header=True)
 
@@ -111,7 +117,7 @@ class SentimentModel(nn.Module):
         self.fc_dropout_rate = fc_dropout
         self.fcs = []
         input_fc, output_fc = self.rnn_hidden_dim, self.fc_hidden_dim
-        for _ in range(self.fc_num_layers-1):
+        for _ in range(self.fc_num_layers):
             self.fcs.append(nn.Linear(in_features=input_fc, out_features=output_fc))
             input_fc = output_fc
         self.stack_fc = nn.Sequential(*(self.fcs))
@@ -319,6 +325,7 @@ def set_hyperparameter_dict():
         'learning_rate': 1e-3, # can be modified
         # [0.01, 0.005, 0.001, 0.0005, 0.0001, 0.00005, 0.00001]
         # please set 0.01 to be the maximum value and 0.00001 to the minimum value
+        # ====================================================== do not modify the below hyperparameter
         'batch_size': 32,
         # actually, we can modify the batch size
         # but i think we do not have to modify the batch_size because it effects the training time. 
@@ -326,7 +333,6 @@ def set_hyperparameter_dict():
         'num_epochs': 1, 
         # i think we do not have to modify the num of epochs because it realy effects the training time
         # moreover, we will pick the model that has highest validation score during training
-
         'device':'cuda'
     }
     return param_dict
@@ -342,9 +348,11 @@ class SentimentAnalysisModel:
     def build():
         hyperparameter = set_hyperparameter_dict()
         # load the dataset first so we dont have to load it if we want to train a model
-        train_data, valid_data, test_data, vocab_size, padding_idx = _load_dataset() 
+        train_data, valid_data, test_data, vocab_size, padding_idx = _load_dataset(train_path="../data/sentiment-analysis/Train.csv",
+                                                                                   valid_path="../data/sentiment-analysis/Valid.csv",
+                                                                                   test_path="../data/sentiment-analysis/Test.csv") 
 
-        train_loss, train_acc, valid_loss, valid_acc, test_loss, test_acc = fitness_sentiment_analysis(hyperparameter, train_data, valid_data, test_data, vocab_size, padding_idx)
+        train_loss, train_acc, valid_loss, valid_acc, test_loss, test_acc = fitness_sentiment_analysis(hyperparameter, train_data, valid_data, test_data, vocab_size, padding_idx, save_path="../sentiment-analysis-model")
 
         print(train_loss, train_acc, valid_loss, valid_acc, test_loss, test_acc)
 
