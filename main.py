@@ -5,32 +5,40 @@ import os
 
 sys.path.append(os.getcwd() + '/algorithms')
 
+sys.path.append(os.getcwd() + '/models')
+
+from sentimentanalysis import SentimentAnalysisModel
+
+from imageclassifier import ImageClassifier
+
 from memetic import MemeticAlgorithm
 
 from genetic import GeneticAlgorithm
 
 
-def optimize(options, algorithm="GeneticAlgorithm", selection="Tournament", model="SentimentAnalysisModel", mutate_rate=0.4, num_local_search=3):
+def optimize(data, options, algorithm="GeneticAlgorithm", selection="Tournament", model="SentimentAnalysisModel", mutate_rate=0.4, num_local_search=3):
 
 	search_params = [k for k in options if type(options[k]) == list]
+
+	print(options)
 
 	result = 0
 
 	if algorithm == "GeneticAlgorithm":
 
-		return GeneticAlgorithm.execute(options, search_params, selection, model, mutate_rate)
+		return GeneticAlgorithm.execute(data, options, search_params, selection, model, mutate_rate)
 
 	elif algorithm == "MemeticAlgorithm":
 
-		return MemeticAlgorithm.execute(options, search_params, selection, model, mutate_rate, num_local_search)
+		return MemeticAlgorithm.execute(data, options, search_params, selection, model, mutate_rate, num_local_search)
 
 	raise NotImplementedError
 
 
 
-def run(options, model):
+def run(options, model, data):
 
-	genetic_tournament_params,  genetic_tournament_fitness = optimize(options, "GeneticAlgorithm", "Tournament", model, 0.4, 0)
+	genetic_tournament_params,  genetic_tournament_fitness = optimize(data, options, "GeneticAlgorithm", "Tournament", model, 0.4, 0)
 
 	print("The optimal parameters of " + model + " using Genetic Algorithm with Tournament Selection are: " )
 
@@ -39,7 +47,7 @@ def run(options, model):
 
 	print("The accuracy of the " + model + " is: " + str(genetic_tournament_fitness) + "\n")
 
-	genetic_roullete_params, genetic_roullete_fitness = optimize(options, "GeneticAlgorithm", "Tournament", model, 0.4, 0)
+	genetic_roullete_params, genetic_roullete_fitness = optimize(data, options, "GeneticAlgorithm", "Tournament", model, 0.4, 0)
 
 	print("The optimal parameters of " + model + " using Genetic Algorithm with Roulette Wheel Selection are: " )
 
@@ -49,7 +57,7 @@ def run(options, model):
 	print("The accuracy of the " + model + " is: " + str(genetic_roullete_fitness) + "\n")
 
 
-	memetic_tournament_params, memetic_tournament_fitness = optimize(options, "MemeticAlgorithm", "Tournament", model, 0.4, 3)
+	memetic_tournament_params, memetic_tournament_fitness = optimize(data, options, "MemeticAlgorithm", "Tournament", model, 0.4, 3)
 
 	print("The optimal parameters of " + model + " using Memetic Algorithm with Tournament are: " )
 
@@ -58,7 +66,7 @@ def run(options, model):
 
 	print("The accuracy of the " + model + " is: " + str(memetic_tournament_fitness) + "\n")
 
-	memetic_roullete_params, memetic_roullete_fitness = optimize(options, "MemeticAlgorithm", "Roulette Wheel", model, 0.4, 3)
+	memetic_roullete_params, memetic_roullete_fitness = optimize(data, options, "MemeticAlgorithm", "Roulette Wheel", model, 0.4, 3)
 
 	print("The optimal parameters of " + model + " using Memetic Algorithm with Roulette Wheel Selection are: " )
 
@@ -136,11 +144,16 @@ if __name__ == '__main__':
 		'device':'cuda'
 	}
 
-	print("Running")
+	# sentimentanalysis_data = SentimentAnalysisModel.load_data()
 
-	run(sentimentanalysis_options, "SentimentAnalysisModel")
+	# print("Running")
 
-	run(imageclassifier_options, "ImageClassifier")
+	# run(sentimentanalysis_options, "", sentimentanalysis_data)
+
+
+	imageclassifier_data = ImageClassifier.load_data()
+
+	run(imageclassifier_options, "", imageclassifier_data)
 
 
 

@@ -9,7 +9,7 @@ class LocalSearch:
 		pass
 
 	@staticmethod
-	def search(individual, options, search_params, model):
+	def search(individual, options, search_params, model, data):
 
 		result_individual, result_fitness = individual[0], individual[1]
 
@@ -38,13 +38,13 @@ class LocalSearch:
 
 		neighbor_2[search_param] = options[search_param][(curr_idx + 1 + len(values))%len(values)]
 
-		fitness_1 = FitnessFunction.calculate_fitness(neighbor_1, model)
+		fitness_1 = FitnessFunction.calculate_fitness(neighbor_1, model, data)
 
 		if fitness_1 > result_fitness:
 			result_individual = neighbor_1
 			result_fitness = fitness_1
 
-		fitness_2 = FitnessFunction.calculate_fitness(neighbor_2, model)
+		fitness_2 = FitnessFunction.calculate_fitness(neighbor_2, model, data)
 
 		if fitness_2 > result_fitness:
 			result_individual = neighbor_2

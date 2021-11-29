@@ -341,15 +341,25 @@ class ImageClassifier:
         pass
 
     @staticmethod
-    def build(parameters):
+    def load_data():
 
-        train, val, test, img_size, input_channel, classes = load_dataset(4, data_path=os.getcwd()+"/data/cifar10")
-        print(img_size, input_channel, classes)
+        # this one for Colab
+        # project_path = os.getcwd() + "/drive/My Drive/CS454-AISE-Project" 
 
-        train_loss, train_acc, valid_loss, valid_acc, test_loss, test_acc = fitness_image_classification(parameters, train, val, test, classes, img_size=img_size, input_channel=input_channel, save_path="../cifar10")
+        project_path = os.getcwd()
+
+        train_data, valid_data, test_data, img_size, input_channel, classes = load_dataset(4, data_path=project_path+"/data/cifar10")
+
+        return {"train_data" : train_data, "valid_data": valid_data, "test_data": test_data, "img_size": img_size, "input_channel": input_channel, "classes": classes }
+
+
+    @staticmethod
+    def build(parameters, data):
+
+        train_loss, train_acc, valid_loss, valid_acc, test_loss, test_acc = fitness_image_classification(parameters, data["train_data"], data["valid_data"], data["test_data"], data["classes"], img_size=data["img_size"], input_channel=data["input_channel"], save_path="../cifar10")
 
         print(train_loss, train_acc, valid_loss, valid_acc, test_loss, test_acc)
 
         return test_acc
-if __name__ == '__main__':
-    ImageClassifier.build()
+# if __name__ == '__main__':
+#     ImageClassifier.build()

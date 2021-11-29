@@ -343,24 +343,27 @@ class SentimentAnalysisModel:
     def __init__(self):
         pass
 
+    def load_data():
 
-    @staticmethod
-    def build(parameters):
-    
-        project_path = os.getcwd() + "/drive/My Drive/CS454-AISE-Project"
+        # this one for Colab
+        # project_path = os.getcwd() + "/drive/My Drive/CS454-AISE-Project" 
 
-        print(project_path)
+        project_path = os.getcwd()
 
-        # load the dataset first so we dont have to load it if we want to train a model
         train_data, valid_data, test_data, vocab_size, padding_idx = _load_dataset(train_path=project_path+"/data/sentiment-analysis/Train.csv",
                                                                                    valid_path=project_path+"/data/sentiment-analysis/Valid.csv",
                                                                                    test_path=project_path+"/data/sentiment-analysis/Test.csv") 
 
-        train_loss, train_acc, valid_loss, valid_acc, test_loss, test_acc = fitness_sentiment_analysis(parameters, train_data, valid_data, test_data, vocab_size, padding_idx, save_path="../sentiment-analysis-model")
+        return {"train_data" : train_data, "valid_data": valid_data, "test_data": test_data, "vocab_size": vocab_size, "padding_idx" :padding_idx }
+
+    @staticmethod
+    def build(parameters, data):
+        
+        train_loss, train_acc, valid_loss, valid_acc, test_loss, test_acc = fitness_sentiment_analysis(parameters, data["train_data"], data["valid_data"], data["test_data"], data["vocab_size"], data["padding_idx"], save_path="../sentiment-analysis-model")
 
         print(train_loss, train_acc, valid_loss, valid_acc, test_loss, test_acc)
 
         return 100
 
-if __name__ == '__main__':
-    SentimentAnalysisModel.build()
+# if __name__ == '__main__':
+#     SentimentAnalysisModel.build()
