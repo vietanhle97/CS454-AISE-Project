@@ -121,9 +121,13 @@ def genetic(options, search_params, pop_size, selection_size, generations, strat
 
 	params, fitness = rank_individuals(pop)[0]
 
+	print("fitness result: " + str(fitness))
+
 	for i in range(generations):
 		pop = next_generation(pop, selection_size, options, strategy, search_params, model, mutate_rate)
 		curr_params, curr_fitness = rank_individuals(pop)[0]
+
+		print("fitness result: " + str(curr_fitness))
 
 		if i == generations-1:
 			fitness = curr_fitness

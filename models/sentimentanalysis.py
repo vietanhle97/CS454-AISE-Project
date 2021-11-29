@@ -29,9 +29,9 @@ def print_debug(*args, **kwargs):
     if DEBUG_MODE:
         print(*args, **kwargs)
 
-def _load_dataset(train_path="data/sentiment-analysis/Train.csv",
-                  valid_path="data/sentiment-analysis/Valid.csv", 
-                  test_path="data/sentiment-analysis/Test.csv"):
+def _load_dataset(train_path,
+                  valid_path, 
+                  test_path):
     print_debug("[I] LOAD DATASET")
     preprocess_pipeline = Pipeline(lambda x: re.sub(r'[^a-z]+', ' ', x))
     TEXT = Field(batch_first = True,
@@ -345,17 +345,18 @@ class SentimentAnalysisModel:
 
 
     @staticmethod
-    def build():
-        hyperparameter = set_hyperparameter_dict()
+    def build(parameters):
+    
+        project_path = os.getcwd() + "/drive/My Drive/CS454-AISE-Project"
 
-        project_path = os.getcwd()
+        print(project_path)
 
         # load the dataset first so we dont have to load it if we want to train a model
         train_data, valid_data, test_data, vocab_size, padding_idx = _load_dataset(train_path=project_path+"/data/sentiment-analysis/Train.csv",
                                                                                    valid_path=project_path+"/data/sentiment-analysis/Valid.csv",
                                                                                    test_path=project_path+"/data/sentiment-analysis/Test.csv") 
 
-        train_loss, train_acc, valid_loss, valid_acc, test_loss, test_acc = fitness_sentiment_analysis(hyperparameter, train_data, valid_data, test_data, vocab_size, padding_idx, save_path="../sentiment-analysis-model")
+        train_loss, train_acc, valid_loss, valid_acc, test_loss, test_acc = fitness_sentiment_analysis(parameters, train_data, valid_data, test_data, vocab_size, padding_idx, save_path="../sentiment-analysis-model")
 
         print(train_loss, train_acc, valid_loss, valid_acc, test_loss, test_acc)
 

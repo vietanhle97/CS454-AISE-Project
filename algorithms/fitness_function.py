@@ -16,8 +16,8 @@ class FitnessFunction:
 	def calculate_fitness(parameters, model):
 
 		if model == "SentimentAnalysisModel":
-			return SentimentAnalysisModel.build()
+			return SentimentAnalysisModel.build(parameters)
 		elif model == "ImageClassifier":
-			return ImageClassifier.build()
+			return ImageClassifier.build(parameters)
 
 		return random.randrange(1, 100)
