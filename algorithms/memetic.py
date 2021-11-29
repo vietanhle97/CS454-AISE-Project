@@ -7,6 +7,7 @@ from roulette_wheel_selection import RouletteWheelSelection
 from tournament_selection import TournamentSelection
 from local_search import LocalSearch
 
+
 def create_first_generation(options, search_params):
 
 	first_gen = {}
@@ -118,7 +119,9 @@ def next_generation(data, current, size, options, strategy, search_params, model
 		if improved_fitness > next_gen[idx][1]:
 			next_gen[idx] = (improved_child, improved_fitness)
 
-	return next_gen
+	pop_ranked += next_gen
+
+	return pop_ranked
 
 
 def memetic(data, options, search_params, pop_size, selection_size, generations, strategy, model, num_local_search, mutate_rate):
@@ -131,7 +134,7 @@ def memetic(data, options, search_params, pop_size, selection_size, generations,
 		pop = next_generation(data, pop, selection_size, options, strategy, search_params, model, num_local_search, mutate_rate)
 		curr_params, curr_fitness = rank_individuals(pop)[0]
 
-		if i == generations-1:
+		if curr_fitness > fitness:
 			fitness = curr_fitness
 			params = curr_params
 

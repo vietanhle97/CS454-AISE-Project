@@ -8,6 +8,22 @@ from roulette_wheel_selection import RouletteWheelSelection
 from tournament_selection import TournamentSelection
 from local_search import LocalSearch
 
+
+def is_exist(pop, new_individual):
+
+	if len(pop) == 0:
+		return True
+
+	for i in pop:
+
+		curr = pop[i]
+
+		for k in curr:
+			if curr[k] != new_individual[k]:
+				return False
+	return True
+
+
 def create_first_generation(options, search_params):
 
 	first_gen = {}
