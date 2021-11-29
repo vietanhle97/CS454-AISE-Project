@@ -5,6 +5,7 @@ import os
 sys.path.append(os.getcwd() + '/models')
 
 from sentimentanalysis import SentimentAnalysisModel
+from imageclassifier import ImageClassifier
 
 class FitnessFunction:
 
@@ -16,5 +17,7 @@ class FitnessFunction:
 
 		if model == "SentimentAnalysisModel":
 			return SentimentAnalysisModel.build()
+		elif model == "ImageClassifier":
+			return ImageClassifier.build()
 
 		return random.randrange(1, 100)

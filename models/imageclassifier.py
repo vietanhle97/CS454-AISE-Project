@@ -335,12 +335,22 @@ def set_hyperparameter_dict():
     }
     return param_dict
 
+class ImageClassifier:
+
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def build():
+        train, val, test, img_size, input_channel, classes = load_dataset(4, data_path=os.getcwd()+"/data/cifar10")
+        print(img_size, input_channel, classes)
+
+        hyperparameter = set_hyperparameter_dict()
+
+        train_loss, train_acc, valid_loss, valid_acc, test_loss, test_acc = fitness_image_classification(hyperparameter, train, val, test, classes, img_size=img_size, input_channel=input_channel, save_path="../cifar10")
+
+        print(train_loss, train_acc, valid_loss, valid_acc, test_loss, test_acc)
+
+        return test_acc
 if __name__ == '__main__':
-    train, val, test, img_size, input_channel, classes = load_dataset(4, data_path="../data/cifar10")
-    print(img_size, input_channel, classes)
-
-    hyperparameter = set_hyperparameter_dict()
-
-    train_loss, train_acc, valid_loss, valid_acc, test_loss, test_acc = fitness_image_classification(hyperparameter, train, val, test, classes, img_size=img_size, input_channel=input_channel, save_path="../cifar10")
-
-    print(train_loss, train_acc, valid_loss, valid_acc, test_loss, test_acc)
+    ImageClassifier.build()

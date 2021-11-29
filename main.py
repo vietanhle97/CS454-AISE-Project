@@ -10,7 +10,67 @@ from memetic import MemeticAlgorithm
 from genetic import GeneticAlgorithm
 
 
+def optimize(options, algorithm="GeneticAlgorithm", selection="Tournament", model="SentimentAnalysisModel", mutate_rate=0.4, num_local_search=3):
+
+	search_params = [k for k in options if type(options[k]) == list]
+
+	result = 0
+
+	if algorithm == "GeneticAlgorithm":
+
+		return GeneticAlgorithm.execute(options, search_params, selection, model, mutate_rate)
+
+	elif algorithm == "MemeticAlgorithm":
+
+		return MemeticAlgorithm.execute(options, search_params, selection, model, mutate_rate, num_local_search)
+
+	raise NotImplementedError
+
+
+
+def run(options, model):
+
+	genetic_tournament_params,  genetic_tournament_fitness = optimize(options, "GeneticAlgorithm", "Tournament", model, 0.4, 0)
+
+	print("The optimal parameters of " + model + " using Genetic Algorithm with Tournament Selection are: " )
+
+	for i in genetic_tournament_params:
+		print(i + ": " + str(genetic_tournament_params[i]))
+
+	print("The accuracy of the " + model + " is: " + str(genetic_tournament_fitness) + "\n")
+
+	genetic_roullete_params, genetic_roullete_fitness = optimize(options, "GeneticAlgorithm", "Tournament", model, 0.4, 0)
+
+	print("The optimal parameters of " + model + " using Genetic Algorithm with Roulette Wheel Selection are: " )
+
+	for i in genetic_roullete_params:
+		print(i + ": " + str(genetic_tournament_params[i]))
+
+	print("The accuracy of the " + model + " is: " + str(genetic_roullete_fitness) + "\n")
+
+
+	memetic_tournament_params, memetic_tournament_fitness = optimize(options, "MemeticAlgorithm", "Tournament", model, 0.4, 3)
+
+	print("The optimal parameters of " + model + " using Memetic Algorithm with Tournament are: " )
+
+	for i in memetic_tournament_params:
+		print(i + ": " + str(memetic_tournament_params[i]))
+
+	print("The accuracy of the " + model + " is: " + str(memetic_tournament_fitness) + "\n")
+
+	memetic_roullete_params, memetic_roullete_fitness = optimize(options, "MemeticAlgorithm", "Roulette Wheel", model, 0.4, 3)
+
+	print("The optimal parameters of " + model + " using Memetic Algorithm with Roulette Wheel Selection are: " )
+
+	for i in memetic_roullete_params:
+		print(i + ": " + str(memetic_roullete_params[i]))
+
+	print("The accuracy of the " + model + " is: " + str(memetic_roullete_fitness) + "\n")
+
+
+
 if __name__ == '__main__':
+
 	sentimentanalysis_options = {
 		'model_name': 'sa-1-1', # this is just identifier first '1' means generation and second '1' is just id
 
@@ -48,21 +108,48 @@ if __name__ == '__main__':
 	}
 
 
-	search_params = [k for k in sentimentanalysis_options if type(sentimentanalysis_options[k]) == list]
+	imageclassifier_options = {
+		'model_name': 'sa-1-1', # this is just identifier first '1' means generation and second '1' is just id
 
-	genetic_tournament = GeneticAlgorithm.execute(sentimentanalysis_options, search_params, "Tournament", "", 0.4)
+		"conv_1_out_channels": [8, 16, 32, 64, 128, 256, 512, 1024, 2048],
 
-	print(genetic_tournament)
+		"conv_1_bias": [True, False],
 
-	genetic_roullete = GeneticAlgorithm.execute(sentimentanalysis_options, search_params, "Roulette Wheel", "", 0.4)
+		"conv_2_out_channels": [8, 16, 32, 64, 128, 256, 512, 1024, 2048],
 
-	print(genetic_roullete)
+		"conv_2_bias": [True, False],
+
+		"conv_dropout": [0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85],
+
+		"fc_hidden_dim": [8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096],
+
+		"fc_num_layers": [1,2,3,4,5,6,7,8],
+
+		"fc_dropout": [0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85],
+
+		"learning_rate": [0.01, 0.005, 0.001, 0.0005, 0.0001, 0.00005, 0.00001], 
+		# ============= do not modify the below hyperparameter
+		"batch_size": 8, 
+
+		"num_epochs": 10, 
+
+		'device':'cuda'
+	}
+
+	print("Running")
+
+	run(sentimentanalysis_options, "SentimentAnalysisModel")
+
+	run(imageclassifier_options, "ImageClassifier")
 
 
-	memetic_tournament = MemeticAlgorithm.execute(sentimentanalysis_options, search_params, "Tournament", "", 0.4, 3)
 
-	print(memetic_tournament)
 
-	memetic_roullete = MemeticAlgorithm.execute(sentimentanalysis_options, search_params, "Roulette Wheel", "", 0.4, 3)
 
-	print(memetic_roullete)
+
+
+
+
+
+
+
