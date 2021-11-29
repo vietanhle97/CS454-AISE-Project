@@ -283,13 +283,21 @@ def fitness_image_classification(hyperparameter, train_data, valid_data, test_da
         test_loss, test_acc = evaluate(model, test_data, criterion, device)
         end_test_time = time.time()
         print(f'Test Loss: {test_loss:.3f} |  Test Acc: {test_acc*100:.2f}%')
+    except KeyboardInterrupt as e:
+        print("Keyboard Interrupt. Exit.")
+        raise e
+    except RuntimeError as e:
+        if 'out of memory' in str(e):
+            print('WARNING: ran out of memory. Skip train and evaluating this model')
+            end_train_time, start_train_time = -1, -1
+            end_test_time, start_test_time = -1, -1
+            train_loss, train_acc = -1, -1
+            valid_loss, valid_acc = -1, -1
+            test_loss, test_acc = -1, -1
+        else:
+            raise e
     except:
-        raise
-        end_train_time, start_train_time = -1, -1
-        end_test_time, start_test_time = -1, -1
-        train_loss, train_acc = -1, -1
-        valid_loss, valid_acc = -1, -1
-        test_loss, test_acc = -1, -1
+        raise e
 
     # save result before return
     fitness_result = {
