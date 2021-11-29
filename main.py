@@ -20,8 +20,6 @@ def optimize(data, options, algorithm="GeneticAlgorithm", selection="Tournament"
 
 	search_params = [k for k in options if type(options[k]) == list]
 
-	print(options)
-
 	result = 0
 
 	if algorithm == "GeneticAlgorithm":
@@ -144,16 +142,14 @@ if __name__ == '__main__':
 		'device':'cuda'
 	}
 
-	# sentimentanalysis_data = SentimentAnalysisModel.load_data()
+	sentimentanalysis_data = SentimentAnalysisModel.load_data()
 
-	# print("Running")
-
-	# run(sentimentanalysis_options, "", sentimentanalysis_data)
+	run(sentimentanalysis_options, "SentimentAnalysisModel", sentimentanalysis_data)
 
 
 	imageclassifier_data = ImageClassifier.load_data()
 
-	run(imageclassifier_options, "", imageclassifier_data)
+	run(imageclassifier_options, "ImageClassifier", imageclassifier_data)
 
 
 

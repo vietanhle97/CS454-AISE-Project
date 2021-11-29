@@ -200,6 +200,7 @@ def verify_dir(dir_path):
 
 def fitness_sentiment_analysis(hyperparameter, train_data, valid_data, test_data, vocab_size, padding_idx, save_path="sentiment-analysis-model", verbose=True):
     print_debug("[I] fitness_sentiment_analysis")
+    print(hyperparameter)
     seed_reset()
     NUM_EMBEDDINGS = vocab_size
     PADDING_IDX = padding_idx
@@ -363,7 +364,7 @@ class SentimentAnalysisModel:
 
         print(train_loss, train_acc, valid_loss, valid_acc, test_loss, test_acc)
 
-        return 100
+        return test_acc
 
 # if __name__ == '__main__':
 #     SentimentAnalysisModel.build()
