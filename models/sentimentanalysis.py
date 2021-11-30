@@ -356,9 +356,9 @@ class SentimentAnalysisModel:
     def load_data():
 
         # this one for Colab
-        project_path = os.getcwd() + "/drive/My Drive/CS454-AISE-Project" 
+        # project_path = os.getcwd() + "/drive/My Drive/CS454-AISE-Project" 
 
-        # project_path = os.getcwd()
+        project_path = os.getcwd()
 
         train_data, valid_data, test_data, vocab_size, padding_idx = _load_dataset(train_path=project_path+"/data/sentiment-analysis/Train.csv",
                                                                                    valid_path=project_path+"/data/sentiment-analysis/Valid.csv",
