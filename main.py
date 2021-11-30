@@ -38,44 +38,64 @@ def run(options, model, data):
 
 	genetic_tournament_params,  genetic_tournament_fitness = optimize(data, options, "GeneticAlgorithm", "Tournament", model, 0.4, 0)
 
-	print("The optimal parameters of " + model + " using Genetic Algorithm with Tournament Selection are: " )
+	f = open("./result/genetic_tournament.txt", "w")
+
+	f.write("The optimal parameters of " + model + " using Genetic Algorithm with Tournament Selection are: \n" )
 
 	for i in genetic_tournament_params:
-		print(i + ": " + str(genetic_tournament_params[i]))
+		f.write("    " + i + ": " + str(genetic_tournament_params[i]) + "\n")
 
-	print("The accuracy of the " + model + " is: " + str(genetic_tournament_fitness) + "\n")
+	f.write("The accuracy of the " + model + " is: " + str(genetic_tournament_fitness) + "\n")
+
+	f.close()
 
 	genetic_roullete_params, genetic_roullete_fitness = optimize(data, options, "GeneticAlgorithm", "Tournament", model, 0.4, 0)
 
-	print("The optimal parameters of " + model + " using Genetic Algorithm with Roulette Wheel Selection are: " )
+	f = open("./result/genetic_roullete.txt", "w")
+
+	f.write("The optimal parameters of " + model + " using Genetic Algorithm with Roulette Wheel Selection are: \n" )
 
 	for i in genetic_roullete_params:
-		print(i + ": " + str(genetic_tournament_params[i]))
+		f.write("    " + i + ": " + str(genetic_tournament_params[i]) + "\n")
 
-	print("The accuracy of the " + model + " is: " + str(genetic_roullete_fitness) + "\n")
+	f.write("The accuracy of the " + model + " is: " + str(genetic_roullete_fitness) + "\n")
 
+	f.close()
 
 	memetic_tournament_params, memetic_tournament_fitness = optimize(data, options, "MemeticAlgorithm", "Tournament", model, 0.4, 3)
 
-	print("The optimal parameters of " + model + " using Memetic Algorithm with Tournament are: " )
+
+	f = open("./result/memetic_tournament.txt", "w")
+
+	f.write("The optimal parameters of " + model + " using Memetic Algorithm with Tournament Selection are: \n" )
 
 	for i in memetic_tournament_params:
-		print(i + ": " + str(memetic_tournament_params[i]))
+		f.write("    " + i + ": " + str(memetic_tournament_params[i]) + "\n")
 
-	print("The accuracy of the " + model + " is: " + str(memetic_tournament_fitness) + "\n")
+	f.write("The accuracy of the " + model + " is: " + str(memetic_tournament_fitness) + "\n")
+
+	f.close()
 
 	memetic_roullete_params, memetic_roullete_fitness = optimize(data, options, "MemeticAlgorithm", "Roulette Wheel", model, 0.4, 3)
 
-	print("The optimal parameters of " + model + " using Memetic Algorithm with Roulette Wheel Selection are: " )
+	f = open("./result/memetic_roullete.txt", "w")
+
+	f.write("The optimal parameters of " + model + " using Memetic Algorithm with Roulette Wheel Selection are: \n" )
 
 	for i in memetic_roullete_params:
-		print(i + ": " + str(memetic_roullete_params[i]))
+		f.write("    " + i + ": " + str(memetic_roullete_params[i]) + "\n")
 
-	print("The accuracy of the " + model + " is: " + str(memetic_roullete_fitness) + "\n")
+	f.write("The accuracy of the " + model + " is: " + str(memetic_roullete_fitness) + "\n")
+
+
+	f.close()
 
 
 
 if __name__ == '__main__':
+
+	if not os.path.exists(os.getcwd()+"/result"):
+		os.makedirs(os.getcwd()+"/result")
 
 	sentimentanalysis_options = {
 		'model_name': 'sa-1-1', # this is just identifier first '1' means generation and second '1' is just id
