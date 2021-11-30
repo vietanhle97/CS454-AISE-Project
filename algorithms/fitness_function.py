@@ -15,9 +15,9 @@ class FitnessFunction:
 	@staticmethod
 	def calculate_fitness(parameters, model, data):
 
-		# if model == "SentimentAnalysisModel":
-		# 	return SentimentAnalysisModel.build(parameters, data)
-		# elif model == "ImageClassifier":
-		# 	return ImageClassifier.build(parameters)
+		if model == "SentimentAnalysisModel":
+			return SentimentAnalysisModel.build(parameters, data)
+		elif model == "ImageClassifier":
+			return ImageClassifier.build(parameters)
 
 		return random.randrange(1, 100)
