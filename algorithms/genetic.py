@@ -146,7 +146,7 @@ def genetic(data, options, search_params, pop_size, selection_size, generations,
 
 		print("fitness result: " + str(curr_fitness))
 
-		if i == generations-1:
+		if curr_fitness > fitness:
 			fitness = curr_fitness
 			params = curr_params
 

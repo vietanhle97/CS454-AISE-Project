@@ -107,7 +107,7 @@ if __name__ == '__main__':
 		# please set 0.01 to be the maximum value and 0.00001 to the minimum value
 		'batch_size': 32,
 
-		'num_epochs': 1, 
+		'num_epochs': 10, 
 
 		'device':'cuda'
 

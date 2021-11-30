@@ -352,9 +352,9 @@ class ImageClassifier:
     def load_data():
 
         # this one for Colab
-        # project_path = os.getcwd() + "/drive/My Drive/CS454-AISE-Project" 
+        project_path = os.getcwd() + "/drive/My Drive/CS454-AISE-Project" 
 
-        project_path = os.getcwd()
+        # project_path = os.getcwd()
 
         train_data, valid_data, test_data, img_size, input_channel, classes = load_dataset(4, data_path=project_path+"/data/cifar10")
 
