@@ -8,15 +8,14 @@ from roulette_wheel_selection import RouletteWheelSelection
 from tournament_selection import TournamentSelection
 from local_search import LocalSearch
 
-
 def is_exist(pop, new_individual):
 
 	if len(pop) == 0:
-		return True
+		return False
 
-	for i in pop:
+	for individual in pop:
 
-		curr = pop[i]
+		curr = individual[0]
 
 		for k in curr:
 			if curr[k] != new_individual[k]:
@@ -40,6 +39,10 @@ def init_population(data, options, search_params, size, model):
 	population = []
 	for i in range(size):
 		individual = create_first_generation(options, search_params)
+
+		while is_exist(population, individual):
+			individual = create_first_generation(options, search_params)
+
 		fitness = FitnessFunction.calculate_fitness(individual, model, data)
 		population.append((individual, fitness))
 
@@ -55,15 +58,17 @@ def mating_pool(population, selection):
 		pool.append(population[selection[i]])
 	return pool
 
-def crossover(p1, p2, model, data):
+def crossover(p1, p2, model, data, search_params):
 
 	child = {}
 	
-	idx = random.randint(0, len(p1))
+	idx = random.randint(0, len(search_params)-1) # avoid duplication
 
-	params = list(p1.keys())
+	for k in p1.keys():
+		if k not in search_params:
+			child[k] = p1[k]
 
-	for i, e in enumerate(params):
+	for i, e in enumerate(search_params):
 		if i < idx:
 			child[e] = p1[e]
 		else:
@@ -73,7 +78,7 @@ def crossover(p1, p2, model, data):
 
 	return child, fitness
 
-def crossover_population(mating_pool, size, model, data):
+def crossover_population(mating_pool, size, model, data, search_params):
 
 	children = []
 	length = len(mating_pool) - size
@@ -83,7 +88,7 @@ def crossover_population(mating_pool, size, model, data):
 		children.append(mating_pool[i])
 
 	for i in range(length):
-		child, fitness = crossover(pool[i][0], pool[len(mating_pool)-i-1][0], model, data)
+		child, fitness = crossover(pool[i][0], pool[len(mating_pool)-i-1][0], model, data, search_params)
 		
 		children.append((child, fitness))
 
@@ -95,7 +100,15 @@ def mutate(data, individual, options, search_params, model):
 
 	mutate_gene = random.choice(search_params)
 
-	individual[mutate_gene] = random.choice(options[mutate_gene])
+	new_gene = random.choice(options[mutate_gene])
+
+	# Avoid duplication
+
+	while new_gene == individual[mutate_gene]:
+
+		new_gene = random.choice(options[mutate_gene])
+
+	individual[mutate_gene] = new_gene
 
 	fitness = FitnessFunction.calculate_fitness(individual, model, data)
 
@@ -125,7 +138,7 @@ def next_generation(data, current, size, options, strategy, search_params, model
 	elif strategy == "Roulette Wheel":
 		results = RouletteWheelSelection.select(pop_ranked, size)
 	matingpool = mating_pool(current, results)
-	children = crossover_population(matingpool, size, model, data)
+	children = crossover_population(matingpool, size, model, data, search_params)
 	next_gen = mutate_population(data, children, options, search_params, model, mutate_rate)
 	return next_gen
 

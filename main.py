@@ -82,7 +82,7 @@ if __name__ == '__main__':
 
 		'embedding_dim': [8, 16, 32, 64, 128, 256, 512, 1024],
 		# please set 1024 to be the maximum value
-		'rnn_hidden_dim': [8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096], # can be modified
+		'rnn_hidden_dim': [8, 16, 32, 64, 128, 256, 512, 1024], # can be modified
 		# 
 		# please set 4096 to be the maximum value
 		'rnn_num_layers': [1,2,3,4,5,6,7,8], # can be modified
@@ -93,7 +93,7 @@ if __name__ == '__main__':
 		# please set 0.85 to be the maximum value
 		'rnn_bidirectional': [True, False], # can be modified
 		# 
-		'fc_hidden_dim' : [8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096], # can be modified
+		'fc_hidden_dim' : [8, 16, 32, 64, 128, 256, 512, 1024], # can be modified
 
 		# please set 4096 to be the maximum value
 		'fc_num_layers' : [1,2,3,4,5,6,7,8], # can be modified
@@ -117,17 +117,17 @@ if __name__ == '__main__':
 	imageclassifier_options = {
 		'model_name': 'sa-1-1', # this is just identifier first '1' means generation and second '1' is just id
 
-		"conv_1_out_channels": [8, 16, 32, 64, 128, 256, 512, 1024, 2048],
+		"conv_1_out_channels": [8, 16, 32, 64, 128, 256, 512, 1024],
 
 		"conv_1_bias": [True, False],
 
-		"conv_2_out_channels": [8, 16, 32, 64, 128, 256, 512, 1024, 2048],
+		"conv_2_out_channels": [8, 16, 32, 64, 128, 256, 512, 1024],
 
 		"conv_2_bias": [True, False],
 
 		"conv_dropout": [0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85],
 
-		"fc_hidden_dim": [8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096],
+		"fc_hidden_dim": [8, 16, 32, 64, 128, 256, 512, 1024],
 
 		"fc_num_layers": [1,2,3,4,5,6,7,8],
 
