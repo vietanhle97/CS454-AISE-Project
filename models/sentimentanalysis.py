@@ -116,7 +116,7 @@ class SentimentModel(nn.Module):
         self.fc_num_layers = fc_num_layers 
         self.fc_dropout_rate = fc_dropout
         self.fcs = []
-        input_fc, output_fc = self.rnn_hidden_dim, self.fc_hidden_dim
+        input_fc, output_fc = self.fc_infeatures, self.fc_hidden_dim
         for _ in range(self.fc_num_layers):
             self.fcs.append(nn.Linear(in_features=input_fc, out_features=output_fc))
             input_fc = output_fc
