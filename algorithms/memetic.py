@@ -176,5 +176,5 @@ class MemeticAlgorithm:
 
 	@staticmethod
 	def execute(data, options, search_params, strategy, model, mutate_rate, num_local_search):
-		return memetic(data = data, options = options, search_params = search_params, pop_size=3 selection_size=2,  generations=10, strategy=strategy, model = model, mutate_rate = mutate_rate, num_local_search = num_local_search)
+		return memetic(data = data, options = options, search_params = search_params, pop_size=3, selection_size=2,  generations=10, strategy=strategy, model = model, mutate_rate = mutate_rate, num_local_search = num_local_search)
 
