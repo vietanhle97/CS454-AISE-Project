@@ -43,6 +43,11 @@ def init_population(data, options, search_params, size, model):
 		while is_exist(population, individual):
 			individual = create_first_generation(options, search_params)
 
+		if model == "SentimentAnalysisModel":
+			individual["model_name"] = "ma-sa-1" + "-" + str(i+1)
+		else:
+			individual["model_name"] = "ma-ic-1" + "-" + str(i+1)
+
 		fitness = FitnessFunction.calculate_fitness(individual, model, data)
 		population.append((individual, fitness))
 
@@ -58,7 +63,7 @@ def mating_pool(population, selection):
 		pool.append(population[selection[i]])
 	return pool
 
-def crossover(p1, p2, model, data, search_params):
+def crossover(p1, p2, model, data, search_params, index):
 
 	child = {}
 	
@@ -66,7 +71,13 @@ def crossover(p1, p2, model, data, search_params):
 
 	for k in p1.keys():
 		if k not in search_params:
-			child[k] = p1[k]
+			if k == "model_name":
+				curr_model_name = p1["model_name"].split("-")
+				new_model_name = curr_model_name[0] + "-" + curr_model_name[1] + "-" + str(int(curr_model_name[2]) + 1) + "-" + str(index+1)
+				child[k] = new_model_name
+			else:
+				child[k] = p1[k]
+
 
 	for i, e in enumerate(search_params):
 		if i < idx:
@@ -88,7 +99,7 @@ def crossover_population(mating_pool, size, model, data, search_params):
 		children.append(mating_pool[i])
 
 	for i in range(length):
-		child, fitness = crossover(pool[i][0], pool[len(mating_pool)-i-1][0], model, data, search_params)
+		child, fitness = crossover(pool[i][0], pool[len(mating_pool)-i-1][0], model, data, search_params, i)
 		
 		children.append((child, fitness))
 
@@ -128,7 +139,7 @@ def mutate_population(data, population, options, search_params, model, mutate_ra
 
 	return mutated_population
 
-def next_generation(data, current, size, options, strategy, search_params, model, num_local_search, mutate_rate):
+def next_generation(data, current, size, options, strategy, search_params, model, mutate_rate, num_local_search):
 
 	pop_ranked = rank_individuals(current)
 
@@ -140,7 +151,7 @@ def next_generation(data, current, size, options, strategy, search_params, model
 	matingpool = mating_pool(current, results)
 	children = crossover_population(matingpool, size, model, data, search_params)
 	next_gen = mutate_population(data, children, options, search_params, model, mutate_rate)
-	
+
 	improved_individual_indices = random.sample([i for i in range(len(next_gen))], num_local_search)
 
 	for idx in improved_individual_indices:
@@ -153,7 +164,7 @@ def next_generation(data, current, size, options, strategy, search_params, model
 	return next_gen
 
 
-def memetic(data, options, search_params, pop_size, selection_size, generations, strategy, model, num_local_search, mutate_rate):
+def memetic(data, options, search_params, pop_size, selection_size, generations, strategy, model, mutate_rate, num_local_search):
 
 	pop = init_population(data, options, search_params, pop_size, model)
 
@@ -162,7 +173,7 @@ def memetic(data, options, search_params, pop_size, selection_size, generations,
 	print("fitness result: " + str(fitness))
 
 	for i in range(generations):
-		pop = next_generation(data, pop, selection_size, options, strategy, search_params, model, mutate_rate)
+		pop = next_generation(data, pop, selection_size, options, strategy, search_params, model, mutate_rate, num_local_search)
 		curr_params, curr_fitness = rank_individuals(pop)[0]
 
 		print("fitness result: " + str(curr_fitness))
@@ -182,5 +193,5 @@ class MemeticAlgorithm:
 
 	@staticmethod
 	def execute(data, options, search_params, strategy, model, mutate_rate, num_local_search):
-		return memetic(data = data, options = options, search_params = search_params, pop_size=3, selection_size=2,  generations=10, strategy=strategy, model = model, mutate_rate = mutate_rate, num_local_search = num_local_search)
+		return memetic(data = data, options = options, search_params = search_params, pop_size=4, selection_size=2,  generations=10, strategy=strategy, model = model, mutate_rate = mutate_rate, num_local_search = num_local_search)
 

@@ -43,6 +43,11 @@ def init_population(data, options, search_params, size, model):
 		while is_exist(population, individual):
 			individual = create_first_generation(options, search_params)
 
+		if model == "SentimentAnalysisModel":
+			individual["model_name"] = "ga-sa-1" + "-" + str(i+1)
+		else:
+			individual["model_name"] = "ga-ic-1" + "-" + str(i+1)
+
 		fitness = FitnessFunction.calculate_fitness(individual, model, data)
 		population.append((individual, fitness))
 
@@ -58,7 +63,7 @@ def mating_pool(population, selection):
 		pool.append(population[selection[i]])
 	return pool
 
-def crossover(p1, p2, model, data, search_params):
+def crossover(p1, p2, model, data, search_params, index):
 
 	child = {}
 	
@@ -66,7 +71,12 @@ def crossover(p1, p2, model, data, search_params):
 
 	for k in p1.keys():
 		if k not in search_params:
-			child[k] = p1[k]
+			if k == "model_name":
+				curr_model_name = p1["model_name"].split("-")
+				new_model_name = curr_model_name[0] + "-" + curr_model_name[1] + "-" + str(int(curr_model_name[2])+1) + "-" + str(index+1)
+				child[k] = new_model_name
+			else:
+				child[k] = p1[k]
 
 	for i, e in enumerate(search_params):
 		if i < idx:
@@ -84,11 +94,13 @@ def crossover_population(mating_pool, size, model, data, search_params):
 	length = len(mating_pool) - size
 	pool = random.sample(mating_pool, len(mating_pool))
 
+
+
 	for i in range(size):
 		children.append(mating_pool[i])
 
-	for i in range(length):
-		child, fitness = crossover(pool[i][0], pool[len(mating_pool)-i-1][0], model, data, search_params)
+	for idx in range(length):
+		child, fitness = crossover(pool[i][0], pool[len(mating_pool)-i-1][0], model, data, search_params, idx)
 		
 		children.append((child, fitness))
 
@@ -143,8 +155,6 @@ def next_generation(data, current, size, options, strategy, search_params, model
 	return next_gen
 
 
-	# plt.show()
-
 def genetic(data, options, search_params, pop_size, selection_size, generations, strategy, model, mutate_rate):
 
 	pop = init_population(data, options, search_params, pop_size, model)
@@ -174,5 +184,5 @@ class GeneticAlgorithm:
 	@staticmethod
 	def execute(data, options, search_params, strategy, model, mutate_rate):
 
-		return genetic(data = data, options = options, search_params = search_params, pop_size=3, selection_size=2,  generations=10, strategy=strategy, model = model, mutate_rate = mutate_rate)
+		return genetic(data = data, options = options, search_params = search_params, pop_size=4, selection_size=2,  generations=10, strategy=strategy, model = model, mutate_rate = mutate_rate)
 

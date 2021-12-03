@@ -16,7 +16,7 @@ from memetic import MemeticAlgorithm
 from genetic import GeneticAlgorithm
 
 
-def optimize(data, options, algorithm="GeneticAlgorithm", selection="Tournament", model="SentimentAnalysisModel", mutate_rate=0.4, num_local_search=3):
+def optimize(data, options, algorithm, selection, model, mutate_rate, num_local_search):
 
 	search_params = [k for k in options if type(options[k]) == list]
 
@@ -98,7 +98,6 @@ if __name__ == '__main__':
 		os.makedirs(os.getcwd()+"/result")
 
 	sentimentanalysis_options = {
-		'model_name': 'sa-1-1', # this is just identifier first '1' means generation and second '1' is just id
 
 		'embedding_dim': [8, 16, 32, 64, 128, 256, 512, 1024],
 		# please set 1024 to be the maximum value
@@ -135,7 +134,6 @@ if __name__ == '__main__':
 
 
 	imageclassifier_options = {
-		'model_name': 'sa-1-1', # this is just identifier first '1' means generation and second '1' is just id
 
 		"conv_1_out_channels": [8, 16, 32, 64, 128, 256, 512, 1024],
 
