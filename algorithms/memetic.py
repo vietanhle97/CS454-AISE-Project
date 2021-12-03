@@ -114,7 +114,7 @@ def mutate(data, individual, options, search_params, model):
 
 	return individual, fitness
 
-def mutate_population(population, options, search_params, model, mutate_rate, data):
+def mutate_population(data, population, options, search_params, model, mutate_rate):
 	mutated_population = []
 
 	to_be_mutated_individuals = random.sample([i for i in range(len(population))], int(len(population) * mutate_rate))
@@ -125,6 +125,7 @@ def mutate_population(population, options, search_params, model, mutate_rate, da
 			mutated_population.append(mutated_individual)
 		else:
 			mutated_population.append(population[i])
+
 	return mutated_population
 
 def next_generation(data, current, size, options, strategy, search_params, model, num_local_search, mutate_rate):
@@ -138,8 +139,8 @@ def next_generation(data, current, size, options, strategy, search_params, model
 		results = RouletteWheelSelection.select(pop_ranked, size)
 	matingpool = mating_pool(current, results)
 	children = crossover_population(matingpool, size, model, data, search_params)
-	next_gen = mutate_population(children, options, search_params, model, mutate_rate, data)
-
+	next_gen = mutate_population(data, children, options, search_params, model, mutate_rate)
+	
 	improved_individual_indices = random.sample([i for i in range(len(next_gen))], num_local_search)
 
 	for idx in improved_individual_indices:
@@ -158,15 +159,20 @@ def memetic(data, options, search_params, pop_size, selection_size, generations,
 
 	params, fitness = rank_individuals(pop)[0]
 
+	print("fitness result: " + str(fitness))
+
 	for i in range(generations):
-		pop = next_generation(data, pop, selection_size, options, strategy, search_params, model, num_local_search, mutate_rate)
+		pop = next_generation(data, pop, selection_size, options, strategy, search_params, model, mutate_rate)
 		curr_params, curr_fitness = rank_individuals(pop)[0]
+
+		print("fitness result: " + str(curr_fitness))
 
 		if curr_fitness > fitness:
 			fitness = curr_fitness
 			params = curr_params
 
 	return params, fitness 
+
 
 
 class MemeticAlgorithm:
