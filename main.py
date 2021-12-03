@@ -36,7 +36,7 @@ def optimize(data, options, algorithm, selection, model, mutate_rate, num_local_
 
 def run(options, model, data):
 
-	genetic_tournament_params,  genetic_tournament_fitness = optimize(data, options, "GeneticAlgorithm", "Tournament", model, 0.4, 0)
+	genetic_tournament_params,  genetic_tournament_fitness = optimize(data, options, "GeneticAlgorithm", "Tournament", model, 0.5, 0)
 
 	f = open("./result/" + model.lower() + "_genetic_tournament.txt", "w")
 
@@ -49,7 +49,7 @@ def run(options, model, data):
 
 	f.close()
 
-	genetic_roullete_params, genetic_roullete_fitness = optimize(data, options, "GeneticAlgorithm", "Tournament", model, 0.4, 0)
+	genetic_roullete_params, genetic_roullete_fitness = optimize(data, options, "GeneticAlgorithm", "Tournament", model, 0.5, 0)
 
 	f = open("./result/" + model.lower() + "_genetic_roullete.txt", "w")
 
@@ -62,7 +62,7 @@ def run(options, model, data):
 
 	f.close()
 
-	memetic_tournament_params, memetic_tournament_fitness = optimize(data, options, "MemeticAlgorithm", "Tournament", model, 0.4, 3)
+	memetic_tournament_params, memetic_tournament_fitness = optimize(data, options, "MemeticAlgorithm", "Tournament", model, 0.5, 3)
 
 
 	f = open("./result/" + model.lower() + "_memetic_tournament.txt", "w")
@@ -76,7 +76,7 @@ def run(options, model, data):
 
 	f.close()
 
-	memetic_roullete_params, memetic_roullete_fitness = optimize(data, options, "MemeticAlgorithm", "Roulette Wheel", model, 0.4, 3)
+	memetic_roullete_params, memetic_roullete_fitness = optimize(data, options, "MemeticAlgorithm", "Roulette Wheel", model, 0.5, 3)
 
 	f = open("./result/" + model.lower() + "_memetic_roullete.txt", "w")
 

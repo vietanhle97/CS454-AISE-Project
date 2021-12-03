@@ -8,7 +8,7 @@ from roulette_wheel_selection import RouletteWheelSelection
 from tournament_selection import TournamentSelection
 from local_search import LocalSearch
 
-def is_exist(pop, new_individual):
+def is_exist(pop, new_individual, search_params):
 
 	if len(pop) == 0:
 		return False
@@ -17,10 +17,28 @@ def is_exist(pop, new_individual):
 
 		curr = individual[0]
 
-		for k in curr:
+		for k in search_params:
 			if curr[k] != new_individual[k]:
 				return False
 	return True
+
+def find_int(l):
+
+	for i, e in enumerate(l):
+		try:
+			tmp = int(e)
+			return i
+		except:
+			continue
+
+def create_new_name(curr_name, is_mutate, generation, index):
+
+	curr_model_name = curr_name.split("-")
+	idx = find_int(curr_model_name)
+	if is_mutate:
+		return "-".join(curr_model_name[:idx]) + "-m-" + "-".join(curr_model_name[idx:])
+	return "-".join(curr_model_name[:idx]) + "-" + str(generation) + "-" + str(index)
+	
 
 
 def create_first_generation(options, search_params):
@@ -35,18 +53,24 @@ def create_first_generation(options, search_params):
 
 	return first_gen
 
-def init_population(data, options, search_params, size, model):
+def init_population(data, options, search_params, size, model, strategy):
 	population = []
 	for i in range(size):
 		individual = create_first_generation(options, search_params)
 
-		while is_exist(population, individual):
+		while is_exist(population, individual, search_params):
 			individual = create_first_generation(options, search_params)
 
 		if model == "SentimentAnalysisModel":
-			individual["model_name"] = "ga-sa-1" + "-" + str(i+1)
+			if strategy == "Tournament":
+				individual["model_name"] = "ga-sa-tournament-1" + "-" + str(i+1)
+			else:
+				individual["model_name"] = "ga-sa-roulette-1" + "-" + str(i+1)
 		else:
-			individual["model_name"] = "ga-ic-1" + "-" + str(i+1)
+			if strategy == "Tournament":
+				individual["model_name"] = "ga-ic-tournament-1" + "-" + str(i+1)
+			else:
+				individual["model_name"] = "ga-ic-roulette-1" + "-" + str(i+1)
 
 		fitness = FitnessFunction.calculate_fitness(individual, model, data)
 		population.append((individual, fitness))
@@ -63,7 +87,7 @@ def mating_pool(population, selection):
 		pool.append(population[selection[i]])
 	return pool
 
-def crossover(p1, p2, model, data, search_params, index):
+def crossover(p1, p2, model, data, search_params, generation, index):
 
 	child = {}
 	
@@ -72,9 +96,7 @@ def crossover(p1, p2, model, data, search_params, index):
 	for k in p1.keys():
 		if k not in search_params:
 			if k == "model_name":
-				curr_model_name = p1["model_name"].split("-")
-				new_model_name = curr_model_name[0] + "-" + curr_model_name[1] + "-" + str(int(curr_model_name[2])+1) + "-" + str(index+1)
-				child[k] = new_model_name
+				child[k] = create_new_name(p1["model_name"], is_mutate=False, generation=generation, index=index)
 			else:
 				child[k] = p1[k]
 
@@ -88,7 +110,7 @@ def crossover(p1, p2, model, data, search_params, index):
 
 	return child, fitness
 
-def crossover_population(mating_pool, size, model, data, search_params):
+def crossover_population(mating_pool, size, model, data, search_params, generation):
 
 	children = []
 	length = len(mating_pool) - size
@@ -99,8 +121,8 @@ def crossover_population(mating_pool, size, model, data, search_params):
 	for i in range(size):
 		children.append(mating_pool[i])
 
-	for idx in range(length):
-		child, fitness = crossover(pool[i][0], pool[len(mating_pool)-i-1][0], model, data, search_params, idx)
+	for idx in range(1, length+1):
+		child, fitness = crossover(pool[i][0], pool[len(mating_pool)-i-1][0], model, data, search_params, generation, idx)
 		
 		children.append((child, fitness))
 
@@ -122,6 +144,9 @@ def mutate(data, individual, options, search_params, model):
 
 	individual[mutate_gene] = new_gene
 
+
+	individual["model_name"] = create_new_name(individual["model_name"], is_mutate=True, generation=None, index=None)
+
 	fitness = FitnessFunction.calculate_fitness(individual, model, data)
 
 	return individual, fitness
@@ -140,7 +165,7 @@ def mutate_population(data, population, options, search_params, model, mutate_ra
 
 	return mutated_population
 
-def next_generation(data, current, size, options, strategy, search_params, model, mutate_rate):
+def next_generation(data, current, size, options, strategy, search_params, model, mutate_rate, generation):
 
 	pop_ranked = rank_individuals(current)
 
@@ -150,21 +175,21 @@ def next_generation(data, current, size, options, strategy, search_params, model
 	elif strategy == "Roulette Wheel":
 		results = RouletteWheelSelection.select(pop_ranked, size)
 	matingpool = mating_pool(current, results)
-	children = crossover_population(matingpool, size, model, data, search_params)
+	children = crossover_population(matingpool, size, model, data, search_params, generation)
 	next_gen = mutate_population(data, children, options, search_params, model, mutate_rate)
 	return next_gen
 
 
 def genetic(data, options, search_params, pop_size, selection_size, generations, strategy, model, mutate_rate):
 
-	pop = init_population(data, options, search_params, pop_size, model)
+	pop = init_population(data, options, search_params, pop_size, model, strategy)
 
 	params, fitness = rank_individuals(pop)[0]
 
 	print("fitness result: " + str(fitness))
 
-	for i in range(generations):
-		pop = next_generation(data, pop, selection_size, options, strategy, search_params, model, mutate_rate)
+	for generation in range(2, generations+2):
+		pop = next_generation(data, pop, selection_size, options, strategy, search_params, model, mutate_rate, generation)
 		curr_params, curr_fitness = rank_individuals(pop)[0]
 
 		print("fitness result: " + str(curr_fitness))
