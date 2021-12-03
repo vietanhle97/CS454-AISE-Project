@@ -149,9 +149,7 @@ def next_generation(data, current, size, options, strategy, search_params, model
 		if improved_fitness > next_gen[idx][1]:
 			next_gen[idx] = (improved_child, improved_fitness)
 
-	pop_ranked += next_gen
-
-	return pop_ranked
+	return next_gen
 
 
 def memetic(data, options, search_params, pop_size, selection_size, generations, strategy, model, num_local_search, mutate_rate):
@@ -178,5 +176,5 @@ class MemeticAlgorithm:
 
 	@staticmethod
 	def execute(data, options, search_params, strategy, model, mutate_rate, num_local_search):
-		return memetic(data = data, options = options, search_params = search_params, pop_size=3, selection_size=2,  generations=10, strategy=strategy, model = model, mutate_rate = mutate_rate, num_local_search = num_local_search)
+		return memetic(data = data, options = options, search_params = search_params, pop_size=3 selection_size=2,  generations=10, strategy=strategy, model = model, mutate_rate = mutate_rate, num_local_search = num_local_search)
 

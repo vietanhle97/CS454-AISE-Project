@@ -36,7 +36,7 @@ class LocalSearch:
 
 		neighbor_2 = copy.deepcopy(individual[0])
 
-		neighbor_2[search_param] = options[search_param][(curr_idx + 1 + len(values))%len(values)]
+		neighbor_2[search_param] = options[search_param][(curr_idx - 1 + len(values))%len(values)]
 
 		fitness_1 = FitnessFunction.calculate_fitness(neighbor_1, model, data)
 
