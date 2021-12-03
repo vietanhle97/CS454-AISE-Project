@@ -37,7 +37,7 @@ def create_new_name(curr_name, is_mutate, generation, index):
 	idx = find_int(curr_model_name)
 	if is_mutate:
 		return "-".join(curr_model_name[:idx]) + "-m-" + "-".join(curr_model_name[idx:])
-	return "-".join(curr_model_name[:idx]) + "-" + str(generation) + "-" + str(index)
+	return "-".join(curr_model_name[:3]) + "-" + str(generation) + "-" + str(index)
 
 def create_first_generation(options, search_params):
 
