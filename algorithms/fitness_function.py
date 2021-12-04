@@ -18,6 +18,6 @@ class FitnessFunction:
 		if model == "SentimentAnalysisModel":
 			return SentimentAnalysisModel.build(parameters, data)
 		elif model == "ImageClassifier":
-			return ImageClassifier.build(parameters)
+			return ImageClassifier.build(parameters, data)
 
 		return random.randrange(1, 100)
