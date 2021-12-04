@@ -15,9 +15,6 @@ from memetic import MemeticAlgorithm
 
 from genetic import GeneticAlgorithm
 
-from fitness_function import FitnessFunction
-
-
 def optimize(data, options, algorithm, selection, model, mutate_rate, num_local_search):
 
 	search_params = [k for k in options if type(options[k]) == list]
@@ -164,7 +161,7 @@ if __name__ == '__main__':
 
 	sentimentanalysis_data = SentimentAnalysisModel.load_data()
 
-	run(sentimentanalysis_options, "SentimentAnalysisModel", sentimentanalysis)
+	run(sentimentanalysis_options, "SentimentAnalysisModel", sentimentanalysis_data)
 
 
 	imageclassifier_data = ImageClassifier.load_data()
