@@ -15,6 +15,8 @@ from memetic import MemeticAlgorithm
 
 from genetic import GeneticAlgorithm
 
+from fitness_function import FitnessFunction
+
 
 def optimize(data, options, algorithm, selection, model, mutate_rate, num_local_search):
 
@@ -49,7 +51,7 @@ def run(options, model, data):
 
 	f.close()
 
-	genetic_roullete_params, genetic_roullete_fitness = optimize(data, options, "GeneticAlgorithm", "Tournament", model, 0.5, 0)
+	genetic_roullete_params, genetic_roullete_fitness = optimize(data, options, "GeneticAlgorithm", "Roulette Wheel", model, 0.5, 0)
 
 	f = open("./result/" + model.lower() + "_genetic_roullete.txt", "w")
 
@@ -162,7 +164,7 @@ if __name__ == '__main__':
 
 	sentimentanalysis_data = SentimentAnalysisModel.load_data()
 
-	run(sentimentanalysis_options, "SentimentAnalysisModel", sentimentanalysis_data)
+	run(sentimentanalysis_options, "SentimentAnalysisModel", sentimentanalysis)
 
 
 	imageclassifier_data = ImageClassifier.load_data()
