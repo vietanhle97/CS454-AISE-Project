@@ -55,7 +55,7 @@ def run(options, model, data):
 	f.write("The optimal parameters of " + model + " using Genetic Algorithm with Roulette Wheel Selection are: \n" )
 
 	for i in genetic_roullete_params:
-		f.write("    " + i + ": " + str(genetic_tournament_params[i]) + "\n")
+		f.write("    " + i + ": " + str(genetic_roullete_params[i]) + "\n")
 
 	f.write("The accuracy of the " + model + " is: " + str(genetic_roullete_fitness) + "\n")
 
