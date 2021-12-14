@@ -207,7 +207,7 @@ class GeneticAlgorithm:
 		pass
 
 	@staticmethod
-	def execute(data, options, search_params, strategy, model, mutate_rate):
+	def execute(data, options, generations, pop_size, selection_size, search_params, strategy, model, mutate_rate):
 
-		return genetic(data = data, options = options, search_params = search_params, pop_size=4, selection_size=2,  generations=10, strategy=strategy, model = model, mutate_rate = mutate_rate)
+		return genetic(data = data, options = options, search_params = search_params, pop_size=pop_size, selection_size=selection_size,  generations=generations, strategy=strategy, model = model, mutate_rate = mutate_rate)
 

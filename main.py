@@ -15,7 +15,7 @@ from memetic import MemeticAlgorithm
 
 from genetic import GeneticAlgorithm
 
-def optimize(data, options, algorithm, selection, model, mutate_rate, num_local_search):
+def optimize(data, options, algorithm, strategy, model, generations, pop_size, selection_size, mutate_rate, num_local_search):
 
 	search_params = [k for k in options if type(options[k]) == list]
 
@@ -23,19 +23,19 @@ def optimize(data, options, algorithm, selection, model, mutate_rate, num_local_
 
 	if algorithm == "GeneticAlgorithm":
 
-		return GeneticAlgorithm.execute(data, options, search_params, selection, model, mutate_rate)
+		return GeneticAlgorithm.execute(data, options, generations, pop_size, selection_size, search_params, strategy, model, mutate_rate)
 
 	elif algorithm == "MemeticAlgorithm":
 
-		return MemeticAlgorithm.execute(data, options, search_params, selection, model, mutate_rate, num_local_search)
+		return MemeticAlgorithm.execute(data, options, generations, pop_size, selection_size, search_params, strategy, model, mutate_rate, num_local_search)
 
 	raise NotImplementedError
 
 
 
-def run(options, model, data):
+def run(options, model, data, generations, pop_size, selection_size, mutate_rate, num_local_search):
 
-	genetic_tournament_params,  genetic_tournament_fitness = optimize(data, options, "GeneticAlgorithm", "Tournament", model, 0.5, 0)
+	genetic_tournament_params,  genetic_tournament_fitness = optimize(data, options, "GeneticAlgorithm", "Tournament", model, generations, pop_size, selection_size, mutate_rate, num_local_search)
 
 	f = open("./result/" + model.lower() + "_genetic_tournament.txt", "w")
 
@@ -48,7 +48,7 @@ def run(options, model, data):
 
 	f.close()
 
-	genetic_roullete_params, genetic_roullete_fitness = optimize(data, options, "GeneticAlgorithm", "Roulette Wheel", model, 0.5, 0)
+	genetic_roullete_params, genetic_roullete_fitness = optimize(data, options, "GeneticAlgorithm", "Roulette Wheel", model, generations, pop_size, selection_size, mutate_rate, num_local_search)
 
 	f = open("./result/" + model.lower() + "_genetic_roullete.txt", "w")
 
@@ -61,7 +61,7 @@ def run(options, model, data):
 
 	f.close()
 
-	memetic_tournament_params, memetic_tournament_fitness = optimize(data, options, "MemeticAlgorithm", "Tournament", model, 0.5, 3)
+	memetic_tournament_params, memetic_tournament_fitness = optimize(data, options, "MemeticAlgorithm", "Tournament", model, generations, pop_size, selection_size, mutate_rate, num_local_search)
 
 
 	f = open("./result/" + model.lower() + "_memetic_tournament.txt", "w")
@@ -75,7 +75,7 @@ def run(options, model, data):
 
 	f.close()
 
-	memetic_roullete_params, memetic_roullete_fitness = optimize(data, options, "MemeticAlgorithm", "Roulette Wheel", model, 0.5, 3)
+	memetic_roullete_params, memetic_roullete_fitness = optimize(data, options, "MemeticAlgorithm", "Roulette Wheel", model, generations, pop_size, selection_size, mutate_rate, num_local_search)
 
 	f = open("./result/" + model.lower() + "_memetic_roullete.txt", "w")
 
@@ -152,14 +152,21 @@ if __name__ == '__main__':
 		'device':'cuda'
 	}
 
+	# config manually
+	generations = 10 
+	pop_size = 4 
+	selection_size = 2 
+	mutate_rate = 0.5
+	num_local_search = 3
+
 	sentimentanalysis_data = SentimentAnalysisModel.load_data()
 
-	run(sentimentanalysis_options, "SentimentAnalysisModel", sentimentanalysis_data)
+	run(sentimentanalysis_options, "SentimentAnalysisModel", data, generations, pop_size, selection_size, mutate_rate, num_local_search)
 
 
 	imageclassifier_data = ImageClassifier.load_data()
 
-	run(imageclassifier_options, "ImageClassifier", imageclassifier_data)
+	run(imageclassifier_options, "ImageClassifier", data, generations, pop_size, selection_size, mutate_rate, num_local_search)
 
 
 

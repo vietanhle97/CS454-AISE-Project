@@ -8,7 +8,7 @@ from tournament_selection import TournamentSelection
 from local_search import LocalSearch
 
 
-def is_exist(pop, new_individual):
+def is_exist(pop, new_individual, search_params):
 
 	if len(pop) == 0:
 		return False
@@ -17,7 +17,7 @@ def is_exist(pop, new_individual):
 
 		curr = individual[0]
 
-		for k in curr:
+		for k in search_params:
 			if curr[k] != new_individual[k]:
 				return False
 	return True
@@ -56,7 +56,7 @@ def init_population(data, options, search_params, size, model, strategy):
 	for i in range(size):
 		individual = create_first_generation(options, search_params)
 
-		while is_exist(population, individual):
+		while is_exist(population, individual, search_params):
 			individual = create_first_generation(options, search_params)
 
 		if model == "SentimentAnalysisModel":
@@ -214,6 +214,6 @@ class MemeticAlgorithm:
 		pass
 
 	@staticmethod
-	def execute(data, options, search_params, strategy, model, mutate_rate, num_local_search):
-		return memetic(data = data, options = options, search_params = search_params, pop_size=4, selection_size=2,  generations=10, strategy=strategy, model = model, mutate_rate = mutate_rate, num_local_search = num_local_search)
+	def execute(data, options, generations, pop_size, selection_size, search_params, strategy, model, mutate_rate, num_local_search):
+		return memetic(data = data, options = options, search_params = search_params, pop_size=pop_size, selection_size=selection_size,  generations=generations, strategy=strategy, model = model, mutate_rate = mutate_rate, num_local_search = num_local_search)
 
